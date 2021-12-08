@@ -36,57 +36,61 @@ namespace Rock_Paper_Scissors_Demo1
 
 				randNum = new Random().Next(1, 4);// inclusive of the first (lower) value and exclusive of hte second(upper) value.
 
+				//switch case on user choice
 				switch(convertedNumber)
                 {
+					//user chose rock
 					case 1:
 						Console.WriteLine("You chose ROCK");
-						if (randNum == 1)
+						if (randNum == 1) //rand chose rock
 						{
 							Console.WriteLine("Opponent chose ROCK\nROCK vs ROCK - Round tied!");
 							roundTied++;
 						}
-						else if (randNum == 2)
+						else if (randNum == 2) //rand chose paper
 						{
 							Console.WriteLine("Opponent chose PAPER\nROCK vs PAPER - Round lost!");
 							roundLost++;
 						}
-						else
+						else //rand chose scissors
 						{
 							Console.WriteLine("Opponent chose SCISSORS\nROCK vs SCISSORS - Round Won!");
 							roundWon++;
 						}
 						break;
+					//user chose paper
 					case 2:
 						Console.WriteLine("You chose PAPER");
-						if (randNum == 1)
+						if (randNum == 1) //rand chose rock
 						{
 							Console.WriteLine("Opponent chose ROCK\nPAPER vs ROCK - Round Won!");
 							roundWon++;
 						}
-						else if (randNum == 2)
+						else if (randNum == 2) //rand chose paper
 						{
 							Console.WriteLine("Opponent chose PAPER\nPAPER vs PAPER - Round Tied!");
 							roundTied++;
 						}
-						else
+						else //rand chose scissors
 						{
 							Console.WriteLine("Opponent chose SCISSORS\nPAPER vs SCISSORS - Round Lost!");
 							roundLost++;
 						}
 						break;
+					//user chose scissors
 					case 3:
 						Console.WriteLine("You chose SCISSORS");
-						if (randNum == 1)
+						if (randNum == 1) //rand chose rock
 						{
 							Console.WriteLine("Opponent chose ROCK\nSCISSORS vs ROCK - Round Lost!");
 							roundLost++;
 						}
-						else if (randNum == 2)
+						else if (randNum == 2) //rand chose paper
 						{
 							Console.WriteLine("Opponent chose PAPER\nSCISSORS vs PAPER - Round Won!");
 							roundWon++;
 						}
-						else
+						else //rand chose scissors
 						{
 							Console.WriteLine("Opponent chose SCISSORS\nSCISSORS vs SCISSORS - Round Tied!");
 							roundTied++;
@@ -95,6 +99,7 @@ namespace Rock_Paper_Scissors_Demo1
                 }
 			}
 
+			//Show score
 			if (roundWon == 2)
 				Console.WriteLine("\nCONGRATS YOU WON!");
 			else
