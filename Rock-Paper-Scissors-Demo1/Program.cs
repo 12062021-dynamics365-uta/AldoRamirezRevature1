@@ -106,6 +106,8 @@ namespace Rock_Paper_Scissors_Demo1
 				Console.WriteLine("\nSORRY YOU LOST!");
 
 			Console.Write($"\nTotal rounds Won - {roundWon}\nTotal rounds Lost - {roundLost}\nTotal Rounds Tied - {roundTied}");
+
+			Console.Write("Would you like to play again?");
 		}
 	}
 }
