@@ -7,107 +7,85 @@ namespace Rock_Paper_Scissors_Demo1
 	{
 		static void Main(string[] args)
 		{
-			int roundWon = 0;
-			int roundTied = 0;
-			int roundLost = 0;
-			int randNum;
+			bool playAgain = true;
 
-			//get input form the user
-			Console.WriteLine("Hello. Welcome to Rock-Paper-Scissors Game!");
-
-			while (roundWon < 2 && roundLost < 2)
+			do
 			{
-				int convertedNumber = -1;
-				bool conversionBool = false;
-				do
+				Choice userChoice = Choice.invalid;
+				Choice computerChoice;
+				int roundWon = 0;
+				int roundTied = 0;
+				int roundLost = 0;
+				int randNum;
+
+				//get input form the user
+				Console.WriteLine("Hello. Welcome to Rock-Paper-Scissors Game!");
+				Console.WriteLine("What is your first name?");
+				string userFName = Console.ReadLine();
+				Console.WriteLine("What is your last name?");
+				string userLName = Console.ReadLine();
+				// save the name as a new player
+
+
+				GamePlayLogic game = new GamePlayLogic(userFName, userLName);
+
+				//loop till one player has won 2 rounds
+				while (game.WinnerYet() == null)
 				{
-					Console.WriteLine("\nPlease enter enter 1 for ROCK, 2 for PAPER, 3 for SCISSORS");
-					string userInput = Console.ReadLine();
-
-					//validate the use input as a 1, 2, or 3
-					//this version of TryParse() takes a string and the second argument is an out variable that is instantiated in that moment.
-					conversionBool = Int32.TryParse(userInput, out convertedNumber);
-					if (!conversionBool || convertedNumber < 1 || convertedNumber > 3)
+					do
 					{
-						Console.WriteLine("Hey, buddy... that wasn't a 1 or 2 or 3!");
-					}
+						Console.WriteLine("\nPlease enter enter 1 for ROCK, 2 for PAPER, 3 for SCISSORS");
+						string userInput = Console.ReadLine();
+		
+						userChoice = game.ValidateUserChoice(userInput);
+						if (userChoice == Choice.invalid)
+						{
+							Console.WriteLine("Hey, buddy... that wasn't a 1 or 2 or 3!");
+						}
 
-				} while (!(convertedNumber > 0 && convertedNumber < 4));
+					} while (userChoice == Choice.invalid);
 
-				randNum = new Random().Next(1, 4);// inclusive of the first (lower) value and exclusive of hte second(upper) value.
+					//get the computers choice
+					computerChoice = game.GetComputerChoice();
+					Console.WriteLine($"Computer chose {computerChoice}");
 
-				//switch case on user choice
-				switch(convertedNumber)
-                {
-					//user chose rock
-					case 1:
-						Console.WriteLine("You chose ROCK");
-						if (randNum == 1) //rand chose rock
-						{
-							Console.WriteLine("Opponent chose ROCK\nROCK vs ROCK - Round tied!");
-							roundTied++;
-						}
-						else if (randNum == 2) //rand chose paper
-						{
-							Console.WriteLine("Opponent chose PAPER\nROCK vs PAPER - Round lost!");
-							roundLost++;
-						}
-						else //rand chose scissors
-						{
-							Console.WriteLine("Opponent chose SCISSORS\nROCK vs SCISSORS - Round Won!");
-							roundWon++;
-						}
-						break;
-					//user chose paper
-					case 2:
-						Console.WriteLine("You chose PAPER");
-						if (randNum == 1) //rand chose rock
-						{
-							Console.WriteLine("Opponent chose ROCK\nPAPER vs ROCK - Round Won!");
-							roundWon++;
-						}
-						else if (randNum == 2) //rand chose paper
-						{
-							Console.WriteLine("Opponent chose PAPER\nPAPER vs PAPER - Round Tied!");
-							roundTied++;
-						}
-						else //rand chose scissors
-						{
-							Console.WriteLine("Opponent chose SCISSORS\nPAPER vs SCISSORS - Round Lost!");
-							roundLost++;
-						}
-						break;
-					//user chose scissors
-					case 3:
-						Console.WriteLine("You chose SCISSORS");
-						if (randNum == 1) //rand chose rock
-						{
-							Console.WriteLine("Opponent chose ROCK\nSCISSORS vs ROCK - Round Lost!");
-							roundLost++;
-						}
-						else if (randNum == 2) //rand chose paper
-						{
-							Console.WriteLine("Opponent chose PAPER\nSCISSORS vs PAPER - Round Won!");
-							roundWon++;
-						}
-						else //rand chose scissors
-						{
-							Console.WriteLine("Opponent chose SCISSORS\nSCISSORS vs SCISSORS - Round Tied!");
-							roundTied++;
-						}
-						break;
-                }
-			}
+					Player roundWinner = game.PlayRound(computerChoice, userChoice);
+					try
+                    {
+						Console.WriteLine($"The winner of this round is {roundWinner.Fname} {roundWinner.Lname}");
+                    }
+					catch (SystemException ex)
+                    {
+						Console.WriteLine("this is the system exception class");
+						Console.WriteLine("\n\nTied Game!");
+                    }
+					catch (Exception ex)
+                    {
+						Console.WriteLine("This is the exception class");
+                    }
+                    finally
+                    {
+						Console.WriteLine("This is the finally block");
+                    }
 
-			//Show score
-			if (roundWon == 2)
-				Console.WriteLine("\nCONGRATS YOU WON!");
-			else
-				Console.WriteLine("\nSORRY YOU LOST!");
+				}
 
-			Console.Write($"\nTotal rounds Won - {roundWon}\nTotal rounds Lost - {roundLost}\nTotal Rounds Tied - {roundTied}");
+				Player gameWinner = game.WinnerYet();
 
-			Console.Write("Would you like to play again?");
+				//Show score
+				if (roundWon == 2)
+					Console.WriteLine("\nCONGRATS YOU WON!");
+				else
+					Console.WriteLine("\nSORRY YOU LOST!");
+
+				Console.Write($"\nTotal rounds Won - {roundWon}\nTotal rounds Lost - {roundLost}\nTotal Rounds Tied - {roundTied}");
+
+				Console.Write("\nWould you like to play again?");
+				string playAgainInput = Console.ReadLine();
+				if (playAgainInput.ToLower().Equals("no"))
+					playAgain = false;
+
+			} while (playAgain);
 		}
 	}
 }
