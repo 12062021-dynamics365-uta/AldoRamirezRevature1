@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P0_StoreApplication
+namespace Model
 {
     /// <summary>
     /// Must be able to view past sales
     /// Must be able to view sales by store location
     /// [stretch goal] Must be able to manage product inventory(add, edit, delete any product)
     /// </summary>
-    class Store
+    public class Store
     {
         public string Location { get; set; }
         public List<Product> Products { get; set; }
