@@ -14,5 +14,15 @@ namespace P0_StoreApplication
     /// </summary>
     class Order
     {
+        const int MAXITEM = 50;
+        const double MAXCOST = 500.00;
+
+        public List<Product> Products { get; set; }
+        public double TotalCost { get; set; }
+
+        public Order ()
+        {
+            Products = new List<Product>();
+        }
     }
 }

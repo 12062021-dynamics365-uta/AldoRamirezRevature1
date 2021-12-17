@@ -13,5 +13,13 @@ namespace P0_StoreApplication
     /// </summary>
     class Store
     {
+        public string Location { get; set; }
+        public List<Product> Products { get; set; }
+
+        public Store(string location)
+        {
+            this.Location = location;
+            Products = new List<Product>();
+        }
     }
 }

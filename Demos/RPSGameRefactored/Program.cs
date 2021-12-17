@@ -7,85 +7,141 @@ namespace Rock_Paper_Scissors_Demo1
 	{
 		static void Main(string[] args)
 		{
-			bool playAgain = true;
+			Choice userChoice = Choice.invalid;
+			Choice computerChoice;
+			bool logout = false;
+			GamePlayLogic game = new GamePlayLogic();
 
 			do
 			{
-				Choice userChoice = Choice.invalid;
-				Choice computerChoice;
-				int roundWon = 0;
-				int roundTied = 0;
-				int roundLost = 0;
-				int randNum;
-
 				//get input form the user
 				Console.WriteLine("Hello. Welcome to Rock-Paper-Scissors Game!");
 				Console.WriteLine("What is your first name?");
 				string userFName = Console.ReadLine();
 				Console.WriteLine("What is your last name?");
 				string userLName = Console.ReadLine();
-				// save the name as a new player
 
+				//log in the player
+				game.Login(userFName, userLName);
 
-				GamePlayLogic game = new GamePlayLogic(userFName, userLName);
-
-				//loop till one player has won 2 rounds
-				while (game.WinnerYet() == null)
+				do
 				{
-					do
+					Console.WriteLine("\nEnter 1 to play a game.\nEnter 2 to see game history.\nEnter 3 to quit.");
+					string menuChoice = Console.ReadLine();
+					userChoice = game.ValidateUserChoice(menuChoice);
+					if (userChoice == Choice.invalid)
+						Console.WriteLine("Hey, buddy... that wasn't a 1 or 2 or 3!");
+
+					switch (userChoice)
 					{
-						Console.WriteLine("\nPlease enter enter 1 for ROCK, 2 for PAPER, 3 for SCISSORS");
-						string userInput = Console.ReadLine();
-		
-						userChoice = game.ValidateUserChoice(userInput);
-						if (userChoice == Choice.invalid)
+						case Choice.Rock:
+							break;
+						case Choice.Paper:
+							List<Game> userGames = game.PrintUserGames();
+							PrintUserGames1(userGames);
+							break;
+						case Choice.Scissors:
+							Environment.Exit(1);
+							break;
+					}
+				} while (userChoice == Choice.invalid);
+				
+				bool playAgain = true;
+
+				userChoice = Choice.invalid;
+				do
+				{
+					game.StartNewGame();
+					//loop till one player has won 2 rounds
+					while (game.WinnerYet() == null)
+					{
+						do
 						{
-							Console.WriteLine("Hey, buddy... that wasn't a 1 or 2 or 3!");
+							Console.WriteLine("\nPlease enter enter 1 for ROCK, 2 for PAPER, 3 for SCISSORS");
+							string userInput = Console.ReadLine();
+
+							userChoice = game.ValidateUserChoice(userInput);
+							if (userChoice == Choice.invalid)
+							{
+								Console.WriteLine("Hey, buddy... that wasn't a 1 or 2 or 3!");
+							}
+
+						} while (userChoice == Choice.invalid);
+
+						//get the computers choice
+						computerChoice = game.GetComputerChoice();
+						Console.WriteLine($"Computer chose {computerChoice}");
+
+						Player roundWinner = game.PlayRound(computerChoice, userChoice);
+
+						if (roundWinner != null)
+						{
+							Console.WriteLine($"The winner of this round is {roundWinner.Fname} {roundWinner.Lname}");
+						}
+						else
+						{
+							Console.WriteLine("Tied Round!");
+							/*try
+							{
+								Console.WriteLine($"The winner of this round is {roundWinner.Fname} {roundWinner.Lname}");
+							}
+							catch (SystemException ex)
+							{
+								Console.WriteLine("\nTied Round!");
+							}
+							catch (Exception ex)
+							{
+								Console.WriteLine("This is the exception class");
+							}*/
 						}
 
-					} while (userChoice == Choice.invalid);
+					}
 
-					//get the computers choice
-					computerChoice = game.GetComputerChoice();
-					Console.WriteLine($"Computer chose {computerChoice}");
+					//Player gameWinner = game.GetWinnerOfLastGame();
 
-					Player roundWinner = game.PlayRound(computerChoice, userChoice);
-					try
-                    {
-						Console.WriteLine($"The winner of this round is {roundWinner.Fname} {roundWinner.Lname}");
-                    }
-					catch (SystemException ex)
-                    {
-						Console.WriteLine("this is the system exception class");
-						Console.WriteLine("\n\nTied Game!");
-                    }
-					catch (Exception ex)
-                    {
-						Console.WriteLine("This is the exception class");
-                    }
-                    finally
-                    {
-						Console.WriteLine("This is the finally block");
-                    }
 
-				}
+					//Show score
+					if (game.GetUserWins() == 2)
+						Console.WriteLine("\nCONGRATS YOU WON!");
+					else
+						Console.WriteLine("\nSORRY YOU LOST!");
 
-				Player gameWinner = game.WinnerYet();
+					Console.Write($"\nTotal rounds Won - {game.GetUserWins()}\nTotal rounds Lost - {game.GetComputerWins()}\nTotal Rounds Tied - {game.GetTies()}");
+					Console.Write($"\nThis game was {game.GetNumRounds()} rounds long!");
 
-				//Show score
-				if (roundWon == 2)
-					Console.WriteLine("\nCONGRATS YOU WON!");
-				else
-					Console.WriteLine("\nSORRY YOU LOST!");
+					Console.Write("\nWould you like to play again?");
+					string playAgainInput = Console.ReadLine();
+					Console.Write("\n");
+					if (playAgainInput.ToLower().Equals("no"))
+					{
+						playAgain = false;
+						logout = true;
+					}
 
-				Console.Write($"\nTotal rounds Won - {roundWon}\nTotal rounds Lost - {roundLost}\nTotal Rounds Tied - {roundTied}");
+				} while (playAgain);
+				game.ResetGame();
 
-				Console.Write("\nWould you like to play again?");
-				string playAgainInput = Console.ReadLine();
-				if (playAgainInput.ToLower().Equals("no"))
-					playAgain = false;
-
-			} while (playAgain);
+			} while (logout);
 		}
+
+		public static void PrintUserGames1(List<Game> games)
+        {
+			int counter = 0;
+			Console.WriteLine($"\nThere are {games.Count} games in your history");
+
+			foreach (Game game in games)
+            {
+				counter++;
+				Console.WriteLine($"\nThis is game {counter}.");
+				Console.WriteLine($"This game was between {game.Player1.Fname} {game.Player1.Lname} and {game.Player2.Fname} {game.Player1.Lname}.");
+				foreach (Round r in game.rounds)
+                {
+					if (r.Winner != null)
+						Console.WriteLine($"{r.Winner.Fname} {r.Winner.Lname} Won round {1}");
+					else
+						Console.WriteLine($"Round {1} was a tie");
+                }
+            }
+        }
 	}
 }

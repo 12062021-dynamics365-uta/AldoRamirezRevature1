@@ -15,5 +15,11 @@ namespace P0_StoreApplication
         public double Price { get; set; }
         public String  Description { get; set; }
 
+        public Product(string name, double price, string description)
+        {
+            this.Name = name;
+            this.Price = price;
+            this.Description = description;
+        }
     }
 }
