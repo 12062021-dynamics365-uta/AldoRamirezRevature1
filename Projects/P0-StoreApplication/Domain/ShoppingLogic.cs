@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Model;
 
-namespace P0_StoreApplication
+namespace Domain
 {
-    class ShoppingLogic
+    public class ShoppingLogic
     {
         private List<Customer> customers;
         public Store CurrentStore { get; set; }
@@ -23,7 +24,7 @@ namespace P0_StoreApplication
 
         }
 
-        internal void login(string userFname, string userLname)
+        public void login(string userFname, string userLname)
         {
             Customer c = customers.Where(c => c.Fname.Equals(userFname) && c.Lname.Equals(userLname)).FirstOrDefault();
             CurrentCustomer = c;
@@ -48,7 +49,7 @@ namespace P0_StoreApplication
             CurrentCustomer.StoreLocations.Add(new Store("Kohl's"));
         }
 
-        internal int validateStoreChoice(String userInput)
+        public int validateStoreChoice(String userInput)
         {
             int convertedNumber = 0;
             bool conversionBool = Int32.TryParse(userInput, out convertedNumber);
@@ -59,7 +60,7 @@ namespace P0_StoreApplication
             return convertedNumber;
         }
 
-        internal void selectStore(int i)
+        public void selectStore(int i)
         {
             CurrentStore = CurrentCustomer.StoreLocations.ElementAt(i - 1);
         }

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Domain;
 
-namespace P0_StoreApplication
+namespace Client
 {
     class Program
     {
@@ -22,19 +23,7 @@ namespace P0_StoreApplication
             //Login the customer
             shopping.login(userFName, userLName);
 
-            List<Store> locations = shopping.CurrentCustomer.StoreLocations;
-            int storeChoice = 0;
-            do
-            {
-                Console.WriteLine("\nPlease select a store location by entering number!");
-                for (int i = 0; i < locations.Count; i++)
-                    Console.WriteLine($"{i + 1}: {locations[i].Location}");
-                storeChoice = shopping.validateStoreChoice(Console.ReadLine());
-
-            } while (storeChoice == 0);
-
-            shopping.selectStore(storeChoice);
-            Console.WriteLine($"You chose {shopping.CurrentStore.Location}");
+            
         }
     }
 }

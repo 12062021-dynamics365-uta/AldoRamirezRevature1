@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P0_StoreApplication
+namespace Model
 {
     /// <summary>
     /// Must be able to compute its total cost
@@ -12,7 +12,7 @@ namespace P0_StoreApplication
     /// Must be able to limit its content to no more than 50 items
     /// Must be able to limit its total cost to no more than $500
     /// </summary>
-    class Order
+    public class Order
     {
         const int MAXITEM = 50;
         const double MAXCOST = 500.00;

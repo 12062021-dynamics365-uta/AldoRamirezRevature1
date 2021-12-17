@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P0_StoreApplication
+namespace Model
 {
     /// <summary>
     /// Must be able to view past purchases
@@ -14,7 +14,7 @@ namespace P0_StoreApplication
     /// Must be able to checkout
     /// Must be able to cancel a purchase
     /// </summary>
-    class Customer
+    public class Customer
     {
         Order order;
         public string Fname { get; set; }
