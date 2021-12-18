@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using Model;
 
 namespace Storage
 {
     public class DataBaseAccess
     {
-        string connectionStr = "Data source = DESKTOP-TMS5341\\SQLEXPRESS; initial Catalog=P0-StoreApplication; integrated security = true";
+        string connectionStr = "Data source = ALDITONE-DESKTO\\SQLEXPRESS; initial Catalog=P0-StoreApplication; integrated security = true";
         private readonly SqlConnection connection;
 
         public DataBaseAccess()
@@ -16,17 +17,20 @@ namespace Storage
             this.connection.Open();
         }
 
-        public void getCustomers()
+        public List<Customer> getCustomers()
         {
             //TODO: Return Customers from database
-            string queryString = "SELECT FirstName, LastName FROM Customers;";
+            string queryString = "SELECT * FROM Customers;";
             SqlCommand cmd = new SqlCommand(queryString, this.connection);
             SqlDataReader dr = cmd.ExecuteReader();
 
-            //Only for testing purposes
+            List<Customer> c = new List<Customer>();
+
             while (dr.Read())
-                Console.WriteLine($"{dr.GetString(0)} {dr.GetString(1)}");
+                c.Add(new Customer(dr.GetInt32(0), dr.GetString(1), dr.GetString(2)));
             dr.Close();
+
+            return c;
         }
 
         public void getStores()
@@ -55,24 +59,55 @@ namespace Storage
             dr.Close();
         }
 
-        public void getOrders()
+        public List<Order> getOrders(int customerId, int storeId)
         {
-            //TODO: Return Order id from database
-        }
+            //TODO: Return Order per customer from database
+            string queryString = "SELECT o.OrderId, p.StoreId, p.ProductId, p.ProductName, p.ProductDesc, p.ProductAmount, o.TotalAmount " +
+                "FROM Products p " +
+                "LEFT JOIN OrderProduct op " +
+                "ON op.ProductId = p.ProductId " +
+                "LEFT JOIN Orders o " +
+                "ON op.OrderId = o.OrderId " +
+                "WHERE o.CustomerId = " + customerId + " AND p.StoreId = " + storeId;
+            SqlCommand cmd = new SqlCommand(queryString, this.connection);
+            SqlDataReader dr = cmd.ExecuteReader();
 
-        public void getOrderProducts()
-        {
-            //TODO: Return Order products per order id from database
+            List<Order> orders = new List<Order>();
+            Order order;
+            while (dr.Read())
+            {
+                order = new Order();
+                order.OrderId = dr.GetInt32(0);
+                order.TotalCost = (double)dr.GetDecimal(6);
+                if (!orders.Exists(x => x.OrderId == dr.GetInt32(0)))
+                    orders.Add(order);
+                
+                foreach(Order o in orders)
+                {
+                    if (o.OrderId == dr.GetInt32(0))
+                        o.Products.Add(new Product(dr.GetInt32(2), dr.GetString(3), dr.GetString(4), (double)dr.GetDecimal(5)));
+                }
+            }
+            dr.Close();
+            return orders;
         }
         
-        public void addCustomer()
+        public int addCustomer(string fName, string lName)
         {
-            //TODO: Add new customer to database
+            //TODO: Add new customer to database and return new Id
+            int newId = 0;
+
+            return newId;
         }
 
-        public void addOrder()
+        public void addOrder(int customerId, int totalAmount)
         {
             //TODO: Add new order to database
+        }
+
+        public void addOrderProduct(int OrderId, int productId)
+        {
+            //TODO: Add orderId and productId to OrderProduct junction table
         }
 
         public void closeDataBaseConnection()

@@ -23,7 +23,11 @@ namespace Client
             //Login the customer
             shopping.login(userFName, userLName);
 
-            
+            //Select Store
+
+            //Chose between start shopping, view previous orders, or logout
+
+            //If start shopping show products, checkout, or cancel
         }
     }
 }

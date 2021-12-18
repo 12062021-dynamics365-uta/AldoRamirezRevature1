@@ -17,13 +17,13 @@ namespace Domain
 
         public ShoppingLogic()
         {
-            customers = new List<Customer>();
             this._dbContext = new DataBaseAccess();
+            this.customers = _dbContext.getCustomers();
         }
 
         public ShoppingLogic(string fName, string lName)
         {
-            this.customers = new List<Customer>();
+            this.customers = _dbContext.getCustomers();
         }
 
         public void login(string userFname, string userLname)
@@ -33,20 +33,21 @@ namespace Domain
 
             if (customer == null)
             {
-                Customer newCustomer = new Customer(userFname, userLname);
+                int tempId = _dbContext.addCustomer(userFname, userLname);
+                Customer newCustomer = new Customer(tempId, userFname, userLname);
                 currentLoggedInCustomer = newCustomer;
                 customers.Add(newCustomer);
             }
 
-            //Temporary testing purposes
-            Console.WriteLine("\nCustomers\n-----------------------------------------");
-            _dbContext.getCustomers();
-            Console.WriteLine("\nStores\n-----------------------------------------");
-            _dbContext.getStores();
-            Console.WriteLine("\nBest Buy Products\n-----------------------------------------");
-            _dbContext.getStoreProducts(1);
+            //temporary testing getting customer orders
+            currentLoggedInCustomer.PastOrders = _dbContext.getOrders(1, 3);
+            foreach (Order o in currentLoggedInCustomer.PastOrders)
+            {
+                Console.WriteLine($"Order Number: {o.OrderId} - Total: ${o.TotalCost}");
+                foreach (Product p in o.Products)
+                    Console.WriteLine($"{p.ProductId}: {p.Name} - {p.Description} = ${p.Price}");
+            }
             _dbContext.closeDataBaseConnection();
-
         }
 
         public int validateStoreChoice(String userInput)
@@ -58,6 +59,11 @@ namespace Domain
                 return 0;
 
             return convertedNumber;
+        }
+
+        public void setPreviousOrders(int storeId)
+        {
+            
         }
     }
 }
