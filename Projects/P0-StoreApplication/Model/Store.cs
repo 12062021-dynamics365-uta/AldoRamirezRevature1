@@ -13,11 +13,13 @@ namespace Model
     /// </summary>
     public class Store
     {
+        public int StoreId { get; set; }
         public string Location { get; set; }
         public List<Product> Products { get; set; }
 
-        public Store(string location)
+        public Store(int storeId, string location)
         {
+            this.StoreId = storeId;
             this.Location = location;
             Products = new List<Product>();
         }

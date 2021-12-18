@@ -17,12 +17,20 @@ namespace Model
         const int MAXITEM = 50;
         const double MAXCOST = 500.00;
 
+        public int OrderId { get; set; }
         public List<Product> Products { get; set; }
         public double TotalCost { get; set; }
 
         public Order ()
         {
-            Products = new List<Product>();
+            this.Products = new List<Product>();
+        }
+
+        public Order (int orderId, List<Product> products, double totalCost)
+        {
+            this.OrderId = orderId;
+            this.Products = products;
+            this.TotalCost = totalCost;
         }
     }
 }

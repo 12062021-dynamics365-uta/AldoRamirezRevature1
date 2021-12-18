@@ -11,15 +11,17 @@ namespace Model
     /// </summary>
     public class Product
     {
+        public int ProductId { get; set; }
         public String Name { get; set; }
+        public String Description { get; set; }
         public double Price { get; set; }
-        public String  Description { get; set; }
 
-        public Product(string name, double price, string description)
+        public Product(int productId, string name, string description, double price)
         {
+            this.ProductId = productId;
             this.Name = name;
-            this.Price = price;
             this.Description = description;
+            this.Price = price;
         }
     }
 }
