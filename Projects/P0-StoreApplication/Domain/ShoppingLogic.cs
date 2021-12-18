@@ -38,6 +38,7 @@ namespace Domain
                 customers.Add(newCustomer);
             }
 
+            //Temporary testing purposes
             Console.WriteLine("\nCustomers\n-----------------------------------------");
             _dbContext.getCustomers();
             Console.WriteLine("\nStores\n-----------------------------------------");
