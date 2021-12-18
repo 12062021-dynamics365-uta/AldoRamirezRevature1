@@ -4,49 +4,48 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Model;
+using Storage;
 
 namespace Domain
 {
     public class ShoppingLogic
     {
+        private readonly DataBaseAccess _dbContext;
         private List<Customer> customers;
+        private Customer currentLoggedInCustomer;
         public Store CurrentStore { get; set; }
-        public Customer CurrentCustomer { get; set; }
 
         public ShoppingLogic()
         {
             customers = new List<Customer>();
+            this._dbContext = new DataBaseAccess();
         }
 
         public ShoppingLogic(string fName, string lName)
         {
-            customers = new List<Customer>();
-
+            this.customers = new List<Customer>();
         }
 
         public void login(string userFname, string userLname)
         {
-            Customer c = customers.Where(c => c.Fname.Equals(userFname) && c.Lname.Equals(userLname)).FirstOrDefault();
-            CurrentCustomer = c;
+            Customer customer = customers.Where(c => c.Fname.Equals(userFname) && c.Lname.Equals(userLname)).FirstOrDefault();
+            currentLoggedInCustomer = customer;
 
-            if (c == null)
+            if (customer == null)
             {
-                Customer c1 = new Customer(userFname, userLname);
-                CurrentCustomer = c1;
-                customers.Add(c1);
+                Customer newCustomer = new Customer(userFname, userLname);
+                currentLoggedInCustomer = newCustomer;
+                customers.Add(newCustomer);
             }
 
-            initializeStores();
-        }
+            Console.WriteLine("\nCustomers\n-----------------------------------------");
+            _dbContext.getCustomers();
+            Console.WriteLine("\nStores\n-----------------------------------------");
+            _dbContext.getStores();
+            Console.WriteLine("\nBest Buy Products\n-----------------------------------------");
+            _dbContext.getStoreProducts(1);
+            _dbContext.closeDataBaseConnection();
 
-        internal void initializeStores()
-        {
-            //TODO: retrieve stores from database
-
-            CurrentCustomer.StoreLocations.Add(new Store("Best Buy"));
-            CurrentCustomer.StoreLocations.Add(new Store("Kroger"));
-            CurrentCustomer.StoreLocations.Add(new Store("The Home Depot"));
-            CurrentCustomer.StoreLocations.Add(new Store("Kohl's"));
         }
 
         public int validateStoreChoice(String userInput)
@@ -54,17 +53,10 @@ namespace Domain
             int convertedNumber = 0;
             bool conversionBool = Int32.TryParse(userInput, out convertedNumber);
 
-            if (!conversionBool || convertedNumber < 1 || convertedNumber > CurrentCustomer.StoreLocations.Count)
+            if (!conversionBool || convertedNumber < 1 || convertedNumber > currentLoggedInCustomer.StoreLocations.Count)
                 return 0;
 
             return convertedNumber;
         }
-
-        public void selectStore(int i)
-        {
-            CurrentStore = CurrentCustomer.StoreLocations.ElementAt(i - 1);
-        }
-
-
     }
 }
