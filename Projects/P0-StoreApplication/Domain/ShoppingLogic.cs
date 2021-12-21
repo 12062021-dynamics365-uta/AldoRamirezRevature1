@@ -11,24 +11,42 @@ namespace Domain
     public class ShoppingLogic
     {
         private readonly DataBaseAccess _dbContext;
-        private List<Customer> customers;
-        private Customer currentLoggedInCustomer;
+        //private List<Customer> customers;
+        public Customer CurrentCustomer { get; set; }
         public Store CurrentStore { get; set; }
 
         public ShoppingLogic()
         {
             this._dbContext = new DataBaseAccess();
-            this.customers = _dbContext.getCustomers();
         }
 
-        public ShoppingLogic(string fName, string lName)
+        public int validateMainMenuChoice(string userInput)
         {
-            this.customers = _dbContext.getCustomers();
+            int convertedNumber = 0;
+            bool conversionBool = Int32.TryParse(userInput, out convertedNumber);
+
+            if (!conversionBool || convertedNumber < 1 || convertedNumber > 3)
+                convertedNumber = 0;
+
+            return convertedNumber;
         }
 
-        public void login(string userFname, string userLname)
+        public bool login(string userName, string password)
         {
-            Customer customer = customers.Where(c => c.Fname.Equals(userFname) && c.Lname.Equals(userLname)).FirstOrDefault();
+            Customer customer = _dbContext.getCustomer(userName, password);
+            
+            if (customer != null)
+            {
+                customer.StoreLocations = _dbContext.getStores();
+                CurrentCustomer = customer;
+                return true;
+            }
+            else
+            {
+                CurrentCustomer = null;
+                return false;
+            }
+            /*Customer customer = customers.Where(c => c.Fname.Equals(userFname) && c.Lname.Equals(userLname)).FirstOrDefault();
             currentLoggedInCustomer = customer;
 
             if (customer == null)
@@ -37,33 +55,52 @@ namespace Domain
                 Customer newCustomer = new Customer(tempId, userFname, userLname);
                 currentLoggedInCustomer = newCustomer;
                 customers.Add(newCustomer);
+                Console.WriteLine(newCustomer.CustomerId);
             }
+            currentLoggedInCustomer.StoreLocations = _dbContext.getStores();*/
 
-            //temporary testing getting customer orders
-            currentLoggedInCustomer.PastOrders = _dbContext.getOrders(1, 3);
-            foreach (Order o in currentLoggedInCustomer.PastOrders)
-            {
-                Console.WriteLine($"Order Number: {o.OrderId} - Total: ${o.TotalCost}");
-                foreach (Product p in o.Products)
-                    Console.WriteLine($"{p.ProductId}: {p.Name} - {p.Description} = ${p.Price}");
-            }
-            _dbContext.closeDataBaseConnection();
+        }
+        public void register(string firstName, string lastName, string userName, string password)
+        {
+            int id = _dbContext.addCustomer(firstName, lastName, userName, password);
+            CurrentCustomer = new Customer(id, firstName, lastName);
+            CurrentCustomer.StoreLocations = _dbContext.getStores();
         }
 
-        public int validateStoreChoice(String userInput)
+        public List<Store> getListOfStores()
+        {
+            return CurrentCustomer.StoreLocations;
+        }
+
+        public List<Order> getListOfOrders()
+        {
+            return CurrentCustomer.PastOrders;
+        }
+
+        public int validateStoreChoice(string userInput)
         {
             int convertedNumber = 0;
             bool conversionBool = Int32.TryParse(userInput, out convertedNumber);
 
-            if (!conversionBool || convertedNumber < 1 || convertedNumber > currentLoggedInCustomer.StoreLocations.Count)
-                return 0;
+            if (!conversionBool || convertedNumber < 1 || convertedNumber > CurrentCustomer.StoreLocations.Count + 1)
+                convertedNumber = 0;
+            else if (convertedNumber != CurrentCustomer.StoreLocations.Count + 1)
+            {
+                CurrentStore = CurrentCustomer.StoreLocations.Find(x => x.StoreId == convertedNumber);
+                initializePreviousStoreOrders();
+            }
 
             return convertedNumber;
         }
 
-        public void setPreviousOrders(int storeId)
+        public void initializePreviousStoreOrders()
         {
-            
+            CurrentCustomer.PastOrders = _dbContext.getOrders(CurrentCustomer.CustomerId, CurrentStore.StoreId);
+        }
+
+        public void exit()
+        {
+            _dbContext.closeDataBaseConnection();
         }
     }
 }
