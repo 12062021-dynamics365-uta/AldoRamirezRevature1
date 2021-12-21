@@ -46,30 +46,12 @@ namespace Domain
                 CurrentCustomer = null;
                 return false;
             }
-            /*Customer customer = customers.Where(c => c.Fname.Equals(userFname) && c.Lname.Equals(userLname)).FirstOrDefault();
-            currentLoggedInCustomer = customer;
-
-            if (customer == null)
-            {
-                int tempId = _dbContext.addCustomer(userFname, userLname);
-                Customer newCustomer = new Customer(tempId, userFname, userLname);
-                currentLoggedInCustomer = newCustomer;
-                customers.Add(newCustomer);
-                Console.WriteLine(newCustomer.CustomerId);
-            }
-            currentLoggedInCustomer.StoreLocations = _dbContext.getStores();*/
-
         }
         public void register(string firstName, string lastName, string userName, string password)
         {
             int id = _dbContext.addCustomer(firstName, lastName, userName, password);
             CurrentCustomer = new Customer(id, firstName, lastName);
             CurrentCustomer.StoreLocations = _dbContext.getStores();
-        }
-
-        public List<Store> getListOfStores()
-        {
-            return CurrentCustomer.StoreLocations;
         }
 
         public List<Order> getListOfOrders()
@@ -87,8 +69,20 @@ namespace Domain
             else if (convertedNumber != CurrentCustomer.StoreLocations.Count + 1)
             {
                 CurrentStore = CurrentCustomer.StoreLocations.Find(x => x.StoreId == convertedNumber);
+                CurrentStore.Products = _dbContext.getStoreProducts(CurrentStore.StoreId);
                 initializePreviousStoreOrders();
             }
+
+            return convertedNumber;
+        }
+
+        public int validateStoreMenuChoice(string userInput)
+        {
+            int convertedNumber = 0;
+            bool conversionBool = Int32.TryParse(userInput, out convertedNumber);
+
+            if (!conversionBool || convertedNumber < 1 || convertedNumber > 3)
+                convertedNumber = 0;
 
             return convertedNumber;
         }
