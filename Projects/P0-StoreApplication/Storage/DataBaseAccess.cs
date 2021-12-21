@@ -51,7 +51,7 @@ namespace Storage
             return stores;
         }
 
-        public void getStoreProducts(int storeId)
+        public List<Product> getStoreProducts(int storeId)
         {
             //TODO: Return Products per store from database
             string queryString = "SELECT ProductId, ProductName, ProductAmount, ProductDesc FROM Products WHERE StoreId = " + storeId;
@@ -62,6 +62,8 @@ namespace Storage
             while (dr.Read())
                 Console.WriteLine($"{dr.GetInt32(0)}: {dr.GetString(1)} - Price:${dr.GetSqlMoney(2)}\nDescription: {dr.GetString(3)}\n");
             dr.Close();
+
+            return null;
         }
 
         public List<Order> getOrders(int customerId, int storeId)
