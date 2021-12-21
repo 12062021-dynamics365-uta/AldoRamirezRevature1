@@ -17,33 +17,38 @@ namespace Storage
             this.connection.Open();
         }
 
-        public List<Customer> getCustomers()
+        public Customer getCustomer(string userName, string password)
         {
-            //TODO: Return Customers from database
             string queryString = "SELECT * FROM Customers;";
             SqlCommand cmd = new SqlCommand(queryString, this.connection);
             SqlDataReader dr = cmd.ExecuteReader();
 
-            List<Customer> c = new List<Customer>();
+            Customer c = null;
 
             while (dr.Read())
-                c.Add(new Customer(dr.GetInt32(0), dr.GetString(1), dr.GetString(2)));
+            {
+                if (dr.GetString(3) == userName && dr.GetString(4) == password)
+                    c = new Customer(dr.GetInt32(0), dr.GetString(1), dr.GetString(2));
+            }
             dr.Close();
 
             return c;
         }
 
-        public void getStores()
+        public List<Store> getStores()
         {
             //TODO: Return Stores from database
             string queryString = "SELECT * FROM Stores;";
             SqlCommand cmd = new SqlCommand(queryString, this.connection);
             SqlDataReader dr = cmd.ExecuteReader();
 
-            //Only for testing purposes
+            List<Store> stores = new List<Store>();
+            
             while (dr.Read())
-                Console.WriteLine($"{dr.GetInt32(0)}: {dr.GetString(1)}");
+                stores.Add(new Store(dr.GetInt32(0), dr.GetString(1)));
             dr.Close();
+
+            return stores;
         }
 
         public void getStoreProducts(int storeId)
@@ -61,7 +66,6 @@ namespace Storage
 
         public List<Order> getOrders(int customerId, int storeId)
         {
-            //TODO: Return Order per customer from database
             string queryString = "SELECT o.OrderId, p.StoreId, p.ProductId, p.ProductName, p.ProductDesc, p.ProductAmount, o.TotalAmount " +
                 "FROM Products p " +
                 "LEFT JOIN OrderProduct op " +
@@ -92,12 +96,16 @@ namespace Storage
             return orders;
         }
         
-        public int addCustomer(string fName, string lName)
+        public int addCustomer(string fName, string lName, string uName, string password)
         {
-            //TODO: Add new customer to database and return new Id
             int newId = 0;
+            string queryString = ($"INSERT INTO Customers (FirstName, LastName, UserName, UserPassword) OUTPUT INSERTED.CustomerId VALUES ('{fName}', '{lName}', '{uName}', '{password}');");
 
-            return newId;
+            using (SqlCommand cmd = new SqlCommand(queryString, this.connection))
+            {
+                newId = (int)cmd.ExecuteScalar();
+                return newId;
+            }
         }
 
         public void addOrder(int customerId, int totalAmount)
