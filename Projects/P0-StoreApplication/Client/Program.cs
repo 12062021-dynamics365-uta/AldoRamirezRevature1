@@ -180,23 +180,6 @@ namespace Client
             return userChoice;
         }
 
-        /// <summary>
-        /// View that displays previous orders
-        /// </summary>
-        /// <param name="orders"></param>
-        public static void printOrders(ShoppingLogic shopping)
-        {
-            Console.WriteLine($"Previous orders from {shopping.CurrentStore.Location}");
-            Console.WriteLine("----------------------------------------------------------");
-            List<Order> orders = shopping.getListOfOrders();
-            foreach (Order o in orders)
-            {
-                Console.WriteLine($"Order Number: {o.OrderId} - Total: ${o.TotalCost}");
-                foreach (Product p in o.Products)
-                    Console.WriteLine($"\t{p.ProductId}: {p.Name} - {p.Description} = ${p.Price}");
-            }
-        }
-
         public static void shoppingMenu(ShoppingLogic shopping)
         {
             List<Product> products = shopping.CurrentStore.Products;
@@ -211,7 +194,7 @@ namespace Client
                     Console.WriteLine("Current Items In Cart:");
                     foreach (Product c in cart)
                         Console.WriteLine($"\t${c.Price} : {c.Name}");
-                    Console.WriteLine("Total:\t$\n");
+                    Console.WriteLine($"Total:\t${shopping.CurrentCustomer.Order.TotalCost}\n");
                 }
                 Console.WriteLine($"Products in {shopping.CurrentStore.Location}");
                 Console.WriteLine("Enter product number to add to cart or view cart, checkout, logout");
@@ -223,7 +206,7 @@ namespace Client
                 }
                 Console.WriteLine("----------------------------------------------------------");
                 Console.WriteLine($"{maxNum}: Checkout");
-                Console.WriteLine($"{++maxNum}: LOGOUT\n");
+                Console.WriteLine($"{++maxNum}: LOGOUT");
                 userChoice = shopping.validateShoppingMenuChoice(Console.ReadLine(), maxNum);
 
                 for (int i = 0; i <= maxNum; i++)
@@ -247,7 +230,7 @@ namespace Client
                     else
                     {
                         Product p = products[userChoice - 1];
-                        cart.Add(p);
+                        shopping.addProductToCart(p);
                         Console.Clear();
                         Console.WriteLine($"{p.Name} added to cart\n");
                         break;
@@ -256,6 +239,23 @@ namespace Client
 
                 //Console.Clear();
             } while (userChoice == 0 || userChoice >= 1 && userChoice <= products.Count);
+        }
+
+        /// <summary>
+        /// View that displays previous orders
+        /// </summary>
+        /// <param name="orders"></param>
+        public static void printOrders(ShoppingLogic shopping)
+        {
+            Console.WriteLine($"Previous orders from {shopping.CurrentStore.Location}");
+            Console.WriteLine("----------------------------------------------------------");
+            List<Order> orders = shopping.getListOfOrders();
+            foreach (Order o in orders)
+            {
+                Console.WriteLine($"Order Number: {o.OrderId} - Total: ${o.TotalCost}");
+                foreach (Product p in o.Products)
+                    Console.WriteLine($"\t{p.ProductId}: {p.Name} - {p.Description} = ${p.Price}");
+            }
         }
     }
 }
