@@ -20,17 +20,6 @@ namespace Domain
             this._dbContext = new DataBaseAccess();
         }
 
-        public int validateMainMenuChoice(string userInput)
-        {
-            int convertedNumber = 0;
-            bool conversionBool = Int32.TryParse(userInput, out convertedNumber);
-
-            if (!conversionBool || convertedNumber < 1 || convertedNumber > 3)
-                convertedNumber = 0;
-
-            return convertedNumber;
-        }
-
         public bool login(string userName, string password)
         {
             Customer customer = _dbContext.getCustomer(userName, password);
@@ -57,6 +46,16 @@ namespace Domain
         public List<Order> getListOfOrders()
         {
             return CurrentCustomer.PastOrders;
+        }
+        public int validateMainMenuChoice(string userInput)
+        {
+            int convertedNumber = 0;
+            bool conversionBool = Int32.TryParse(userInput, out convertedNumber);
+
+            if (!conversionBool || convertedNumber < 1 || convertedNumber > 3)
+                convertedNumber = 0;
+
+            return convertedNumber;
         }
 
         public int validateStoreChoice(string userInput)
@@ -98,6 +97,18 @@ namespace Domain
             return convertedNumber;
         }
 
+        public bool addProductToCart(Product product)
+        {
+            if (CurrentCustomer.Order.TotalCost + product.Price < 500.0)
+            {
+                CurrentCustomer.Cart.Add(product);
+                CurrentCustomer.Order.Products.Add(product);
+                CurrentCustomer.Order.TotalCost += product.Price;
+                return true;
+            }
+            return false;
+        }
+
         public void initializePreviousStoreOrders()
         {
             CurrentCustomer.PastOrders = _dbContext.getOrders(CurrentCustomer.CustomerId, CurrentStore.StoreId);
@@ -107,5 +118,7 @@ namespace Domain
         {
             _dbContext.closeDataBaseConnection();
         }
+
+
     }
 }

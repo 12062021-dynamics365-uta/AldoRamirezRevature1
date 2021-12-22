@@ -16,7 +16,7 @@ namespace Model
     /// </summary>
     public class Customer
     {
-        Order order;
+        public Order Order { get; set; }
         public int CustomerId { get; set; }
         public string Fname { get; set; }
         public string Lname { get; set; }
@@ -29,7 +29,7 @@ namespace Model
             this.CustomerId = customerId;
             this.Fname = fName;
             this.Lname = lName;
-            order = new Order();
+            Order = new Order();
             Cart = new List<Product>();
             StoreLocations = new List<Store>();
             PastOrders = new List<Order>();

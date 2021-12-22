@@ -10,7 +10,7 @@ namespace Storage
     {
         string connectionStr = "Data source = ALDITONE-DESKTO\\SQLEXPRESS; initial Catalog=P0-StoreApplication; integrated security = true";
         private readonly SqlConnection connection;
-        //private readonly EntityToClassMapper mapper;
+        private readonly EntityToClassMapper mapper;
 
         public DataBaseAccess()
         {

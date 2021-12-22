@@ -14,16 +14,15 @@ namespace Model
     /// </summary>
     public class Order
     {
-        const int MAXITEM = 50;
-        const double MAXCOST = 500.00;
-
         public int OrderId { get; set; }
         public List<Product> Products { get; set; }
         public double TotalCost { get; set; }
 
         public Order ()
         {
+            this.OrderId = 0;
             this.Products = new List<Product>();
+            this.TotalCost = 0.0;
         }
 
         public Order (int orderId, List<Product> products, double totalCost)
