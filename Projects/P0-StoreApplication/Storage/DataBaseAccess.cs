@@ -10,6 +10,7 @@ namespace Storage
     {
         string connectionStr = "Data source = ALDITONE-DESKTO\\SQLEXPRESS; initial Catalog=P0-StoreApplication; integrated security = true";
         private readonly SqlConnection connection;
+        //private readonly EntityToClassMapper mapper;
 
         public DataBaseAccess()
         {
@@ -58,12 +59,13 @@ namespace Storage
             SqlCommand cmd = new SqlCommand(queryString, this.connection);
             SqlDataReader dr = cmd.ExecuteReader();
 
+            List<Product> products = new List<Product>();
             //Only for testing purposes
             while (dr.Read())
-                Console.WriteLine($"{dr.GetInt32(0)}: {dr.GetString(1)} - Price:${dr.GetSqlMoney(2)}\nDescription: {dr.GetString(3)}\n");
+                products.Add(new Product(dr.GetInt32(0), dr.GetString(1), dr.GetString(3), (double)dr.GetDecimal(2)));
             dr.Close();
 
-            return null;
+            return products;
         }
 
         public List<Order> getOrders(int customerId, int storeId)

@@ -87,6 +87,17 @@ namespace Domain
             return convertedNumber;
         }
 
+        public int validateShoppingMenuChoice(string userInput, int maxNum)
+        {
+            int convertedNumber = 0;
+            bool conversionBool = Int32.TryParse(userInput, out convertedNumber);
+
+            if (!conversionBool || convertedNumber < 1 || convertedNumber > maxNum)
+                convertedNumber = 0;
+
+            return convertedNumber;
+        }
+
         public void initializePreviousStoreOrders()
         {
             CurrentCustomer.PastOrders = _dbContext.getOrders(CurrentCustomer.CustomerId, CurrentStore.StoreId);

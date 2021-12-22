@@ -29,7 +29,8 @@ namespace Client
                 if (menuChoice == 1)
                 {
                     menuChoice = storeMenu(shopping);
-
+                    if (menuChoice == 1)
+                        shoppingMenu(shopping);
                     //Shopping menu
                     //view cart
                     //checkout
@@ -55,6 +56,7 @@ namespace Client
                 if(userChoice == 3)
                     shopping.exit();
             } while (userChoice == 0);
+            Console.Clear();
             return userChoice;
         }
 
@@ -67,22 +69,23 @@ namespace Client
             bool loggedIn = false;
             do//loop until logged in
             {
-                Console.WriteLine("\nPlease enter username and password to login");
+                Console.WriteLine("Please enter username and password to login");
                 Console.WriteLine("----------------------------------------------------------");
                 Console.Write("Enter User Name: ");
                 string userName = Console.ReadLine();
                 Console.Write("Enter Password: ");
                 string password = Console.ReadLine();
 
+                Console.Clear();
                 if (shopping.login(userName, password))
                 {
                     loggedIn = true;
-                    Console.WriteLine($"\nWelcome back {shopping.CurrentCustomer.Fname} {shopping.CurrentCustomer.Lname}");
+                    Console.WriteLine($"Welcome back {shopping.CurrentCustomer.Fname} {shopping.CurrentCustomer.Lname}");
                 }
                 else
                 {
                     loggedIn = false;
-                    Console.WriteLine("\nInvalid user name or password: Please try again!");
+                    Console.WriteLine("Invalid user name or password: Please try again!");
                 }
 
             } while (!loggedIn);
@@ -96,7 +99,7 @@ namespace Client
         {
             string fName, lName, uName, password;
 
-            Console.WriteLine("\nPlease enter your information below to create an account");
+            Console.WriteLine("Please enter your information below to create an account");
             Console.WriteLine("----------------------------------------------------------");
             Console.Write("Enter First Name: ");
             fName = Console.ReadLine();
@@ -104,11 +107,12 @@ namespace Client
             lName = Console.ReadLine();
             Console.Write("Enter User Name: ");
             uName = Console.ReadLine();
-            Console.Write("Enter Password");
+            Console.Write("Enter Password: ");
             password = Console.ReadLine();
 
             shopping.register(fName, lName, uName, password);
-            Console.WriteLine($"\nAccount created! Welcome {fName} {lName}");
+            Console.Clear();
+            Console.WriteLine($"Account created! Welcome {fName} {lName}");
         }
 
         public static int storeListMenu(ShoppingLogic shopping)
@@ -117,7 +121,7 @@ namespace Client
             int userChoice = 0;
             do
             {
-                Console.WriteLine("\nSelect a store to shop from or logout!");
+                Console.WriteLine("Select a store to shop from or logout!");
                 Console.WriteLine("----------------------------------------------------------");
 
                 List<Store> storeList = shopping.CurrentCustomer.StoreLocations;
@@ -126,6 +130,7 @@ namespace Client
                 Console.WriteLine("5: LOGOUT");
                 userChoice = shopping.validateStoreChoice(Console.ReadLine());
 
+                Console.Clear();
                 if (userChoice == 0)
                     Console.WriteLine("Invalid choice: Please choose by number");
                 else if (userChoice == storeList.Count + 1)
@@ -134,12 +139,11 @@ namespace Client
                 }
                 else
                 {
-                    Console.WriteLine($"\nYou chose to shop from {storeList.Find(x => x.StoreId == userChoice).Location}");
+                    Console.WriteLine($"Welcom to {storeList.Find(x => x.StoreId == userChoice).Location}!");
                     menuInt = 1;
                 }
 
             } while (userChoice == 0);
-
             return menuInt;
         }
 
@@ -149,7 +153,7 @@ namespace Client
             do
             {
                 //Chose between start shopping, view previous orders, or logout
-                Console.WriteLine("\nPlease select an option");
+                Console.WriteLine("Please select an option");
                 Console.WriteLine("----------------------------------------------------------");
                 Console.WriteLine("1: Start Shopping");
                 Console.WriteLine("2: View Previous Orders");
@@ -172,8 +176,8 @@ namespace Client
                         break;
                 }
             } while (userChoice == 0 || userChoice == 2);
-
-            return 0;
+            Console.Clear();
+            return userChoice;
         }
 
         /// <summary>
@@ -182,7 +186,7 @@ namespace Client
         /// <param name="orders"></param>
         public static void printOrders(ShoppingLogic shopping)
         {
-            Console.WriteLine($"\nPrevious orders from {shopping.CurrentStore.Location}");
+            Console.WriteLine($"Previous orders from {shopping.CurrentStore.Location}");
             Console.WriteLine("----------------------------------------------------------");
             List<Order> orders = shopping.getListOfOrders();
             foreach (Order o in orders)
@@ -195,7 +199,63 @@ namespace Client
 
         public static void shoppingMenu(ShoppingLogic shopping)
         {
-            foreach()
+            List<Product> products = shopping.CurrentStore.Products;
+            List<Product> cart;
+            int userChoice = 0;
+            do
+            {
+                int maxNum = 1;
+                cart = shopping.CurrentCustomer.Cart;
+                if (cart.Count != 0)
+                {
+                    Console.WriteLine("Current Items In Cart:");
+                    foreach (Product c in cart)
+                        Console.WriteLine($"\t${c.Price} : {c.Name}");
+                    Console.WriteLine("Total:\t$\n");
+                }
+                Console.WriteLine($"Products in {shopping.CurrentStore.Location}");
+                Console.WriteLine("Enter product number to add to cart or view cart, checkout, logout");
+                Console.WriteLine("----------------------------------------------------------");
+                foreach (Product p in products)
+                {
+                    Console.WriteLine($"{maxNum}: ${p.Price} -- {p.Name} - {p.Description}");
+                    maxNum++;
+                }
+                Console.WriteLine("----------------------------------------------------------");
+                Console.WriteLine($"{maxNum}: Checkout");
+                Console.WriteLine($"{++maxNum}: LOGOUT\n");
+                userChoice = shopping.validateShoppingMenuChoice(Console.ReadLine(), maxNum);
+
+                for (int i = 0; i <= maxNum; i++)
+                {
+                    if (userChoice == 0)
+                    {
+                        Console.WriteLine("Invalid choice: Please choose by number");
+                        break;
+                    }
+                    else if (userChoice == maxNum)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("LOGGING OUT!");
+                        break;
+                    }
+                    else if (userChoice == maxNum - 1)
+                    {
+                        Console.WriteLine("Checking out");
+                        break;
+                    }
+                    else
+                    {
+                        Product p = products[userChoice - 1];
+                        cart.Add(p);
+                        Console.Clear();
+                        Console.WriteLine($"{p.Name} added to cart\n");
+                        break;
+                    }
+                }
+
+                //Console.Clear();
+            } while (userChoice == 0 || userChoice >= 1 && userChoice <= products.Count);
         }
     }
 }
