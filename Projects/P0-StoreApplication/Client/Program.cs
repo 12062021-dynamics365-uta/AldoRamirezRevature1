@@ -254,7 +254,7 @@ namespace Client
                 PrintProduct(products);
                 Console.WriteLine("----------------------------------------------------------");
                 Console.WriteLine($"{maxNum}: Checkout");
-                Console.WriteLine($"{++maxNum}: LOGOUT");
+                Console.WriteLine($"{++maxNum}: Cancel");
                 userChoice = shopping.ValidateShoppingMenuChoice(Console.ReadLine(), maxNum);
 
                 if (userChoice == 0)
@@ -262,13 +262,14 @@ namespace Client
                 else if (userChoice == maxNum)
                 {
                     Console.Clear();
-                    Console.WriteLine("LOGGING OUT!");
-                    mc = MenuChoice.MainMenu;
+                    Console.WriteLine("Canceling Shopping!");
+                    shopping.CancelOrder();
+                    mc = MenuChoice.StoreMenu;
                 }
                 else if (userChoice == maxNum - 1)
                 {
                     Console.Clear();
-                    mc = MenuChoice.StoreMenu;
+                    mc = MenuChoice.OrderSuccsessMenu;
                     shopping.Checkout();
                 }
                 else
@@ -293,8 +294,8 @@ namespace Client
         {
 
             Console.Clear();
-            Console.WriteLine("ORDER SUCCESSFULL");
-            return MenuChoice.Exit;
+            Console.WriteLine($"ORDER SUCCESSFULL");
+            return MenuChoice.StoreMenu;
         }
 
         /// <summary>
@@ -317,7 +318,7 @@ namespace Client
         /// <param name="cart"></param>
         public static void PrintCart(List<Product> cart)
         {
-            double total = 0.0;
+            decimal total = 0;
             Console.WriteLine("Current Items In Cart:");
             foreach (Product c in cart)
             {

@@ -53,7 +53,7 @@ namespace Storage
                     ProductId = dr.GetInt32(0),
                     Name = dr.GetString(1),
                     Description = dr.GetString(3),
-                    Price = (double)dr.GetDecimal(2)
+                    Price = dr.GetDecimal(2)
                 };
                 products.Add(p);
             }
@@ -69,7 +69,7 @@ namespace Storage
                 Order order = new Order()
                 {
                     OrderId = dr.GetInt32(0),
-                    TotalCost = (double)dr.GetDecimal(6)
+                    TotalCost = dr.GetDecimal(6)
                 };
 
                 if (!orders.Exists(x => x.OrderId == dr.GetInt32(0)))
@@ -83,7 +83,7 @@ namespace Storage
                             ProductId = dr.GetInt32(2),
                             Name = dr.GetString(3),
                             Description = dr.GetString(4),
-                            Price = (double)dr.GetDecimal(5)
+                            Price = dr.GetDecimal(5)
                         };
                         o.Products.Add(p);
                     }
