@@ -25,7 +25,7 @@ body {
     cursor: pointer;
     width: 100%;
   }
-
+  
   button:first-letter {
     font: calibre;
     font-size: 20px;

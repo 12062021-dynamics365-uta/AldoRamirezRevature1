@@ -109,6 +109,11 @@ namespace Domain
             return false;
         }
 
+        public void checkout()
+        {
+
+        }
+
         public void initializePreviousStoreOrders()
         {
             CurrentCustomer.PastOrders = _dbContext.getOrders(CurrentCustomer.CustomerId, CurrentStore.StoreId);
