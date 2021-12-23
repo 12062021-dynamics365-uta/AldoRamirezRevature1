@@ -9,40 +9,52 @@ namespace Client
     {
         static void Main(string[] args)
         {
-            bool exit = false; //bool to exit
+            bool exit = false;
             MenuChoice mc = MenuChoice.MainMenu;
             ShoppingLogic shopping = new ShoppingLogic();
+
             do//loop until exit
             {
                 switch(mc)
                 {
                     case MenuChoice.MainMenu:
-                        mc = mainMenu(shopping);
+                        mc = MainMenu(shopping);
                         break;
                     case MenuChoice.LoginMenu:
-                        mc = loginMenu(shopping);
+                        mc = LoginMenu(shopping);
                         break;
                     case MenuChoice.RegisterMenu:
-                        mc = registerMenu(shopping);
+                        mc = RegisterMenu(shopping);
                         break;
                     case MenuChoice.StoreListMenu:
-                        mc = storeListMenu(shopping);
+                        mc = StoreListMenu(shopping);
                         break;
                     case MenuChoice.StoreMenu:
-                        mc = storeMenu(shopping);
+                        mc = StoreMenu(shopping);
                         break;
                     case MenuChoice.ShoppingMenu:
-                        mc = shoppingMenu(shopping);
+                        mc = ShoppingMenu(shopping);
                         break;
                     case MenuChoice.OrderSuccsessMenu:
-                        orderSuccessMenu(shopping);
+                        mc = OrderSuccessMenu(shopping);
+                        break;
+                    case MenuChoice.Exit:
                         exit = true;
                         break;
                 }
             } while (!exit);
+
+            //Close database connection
+            shopping.Exit();
         }
 
-        public static MenuChoice mainMenu(ShoppingLogic shopping)
+        /// <summary>
+        /// Shows the user the Main Menu
+        /// User can chose between login, register or exiting the program
+        /// </summary>
+        /// <param name="shopping"></param>
+        /// <returns>MenuChoice</returns>
+        public static MenuChoice MainMenu(ShoppingLogic shopping)
         {
             int userChoice = 0;
             MenuChoice mc = MenuChoice.MainMenu;
@@ -54,28 +66,37 @@ namespace Client
                 Console.WriteLine("1: Login");
                 Console.WriteLine("2: Register");
                 Console.WriteLine("3: Exit");
-                userChoice = shopping.validateMainMenuChoice(Console.ReadLine());
+                userChoice = shopping.ValidateMainMenuChoice(Console.ReadLine());
 
-                if(userChoice == 0)
-                    Console.WriteLine("Invalid choice: Please choose by number\n");
-                if (userChoice == 1)
-                    mc = MenuChoice.LoginMenu;
-                if (userChoice == 2)
-                    mc = MenuChoice.RegisterMenu;
-                if(userChoice == 3)
-                    shopping.exit();
+                switch(userChoice)
+                {
+                    case 0:
+                        Console.Clear();
+                        Console.WriteLine("Invalid choice: Please choose by number\n");
+                        break;
+                    case 1:
+                        mc = MenuChoice.LoginMenu;
+                        break;
+                    case 2:
+                        mc = MenuChoice.RegisterMenu;
+                        break;
+                    case 3:
+                        mc = MenuChoice.Exit;
+                        break;
+                }
             } while (userChoice == 0);
             Console.Clear();
             return mc;
         }
 
         /// <summary>
-        /// View that displays the login menu
+        /// Shows the user the Login Menu
         /// </summary>
         /// <param name="shopping"></param>
-        public static MenuChoice loginMenu(ShoppingLogic shopping)
+        /// <returns>MenuChoice</returns>
+        public static MenuChoice LoginMenu(ShoppingLogic shopping)
         {
-            bool loggedIn = false;
+            bool loggedIn;
             do//loop until logged in
             {
                 Console.WriteLine("Please enter username and password to login");
@@ -86,7 +107,7 @@ namespace Client
                 string password = Console.ReadLine();
 
                 Console.Clear();
-                if (shopping.login(userName, password))
+                if (shopping.Login(userName, password))
                 {
                     loggedIn = true;
                     Console.WriteLine($"Welcome back {shopping.CurrentCustomer.Fname} {shopping.CurrentCustomer.Lname}");
@@ -96,17 +117,16 @@ namespace Client
                     loggedIn = false;
                     Console.WriteLine("Invalid user name or password: Please try again!");
                 }
-
             } while (!loggedIn);
-
             return MenuChoice.StoreListMenu;
         }
 
         /// <summary>
-        /// View that displays the register menu
+        /// Shows the user the Register Menu
         /// </summary>
         /// <param name="shopping"></param>
-        public static MenuChoice registerMenu(ShoppingLogic shopping)
+        /// <returns>MenuChoice</returns>
+        public static MenuChoice RegisterMenu(ShoppingLogic shopping)
         {
             string fName, lName, uName, password;
 
@@ -121,14 +141,20 @@ namespace Client
             Console.Write("Enter Password: ");
             password = Console.ReadLine();
 
-            shopping.register(fName, lName, uName, password);
+            shopping.Register(fName, lName, uName, password);
             Console.Clear();
             Console.WriteLine($"Account created! Welcome {fName} {lName}");
 
             return MenuChoice.StoreListMenu;
         }
 
-        public static MenuChoice storeListMenu(ShoppingLogic shopping)
+        /// <summary>
+        /// Shows the user the Store List Menu
+        /// User can choose between stores or to logout
+        /// </summary>
+        /// <param name="shopping"></param>
+        /// <returns>MenuChoice</returns>
+        public static MenuChoice StoreListMenu(ShoppingLogic shopping)
         {
             int userChoice = 0;
             MenuChoice mc = MenuChoice.MainMenu;
@@ -139,9 +165,9 @@ namespace Client
 
                 List<Store> storeList = shopping.CurrentCustomer.StoreLocations;
                 foreach (Store s in storeList)
-                    Console.WriteLine($"{s.StoreId}: {s.Location}");
+                    Console.WriteLine($"{s.StoreId}: {s.Name}");
                 Console.WriteLine("5: LOGOUT");
-                userChoice = shopping.validateStoreChoice(Console.ReadLine());
+                userChoice = shopping.ValidateStoreChoice(Console.ReadLine());
 
                 Console.Clear();
                 if (userChoice == 0)
@@ -152,7 +178,7 @@ namespace Client
                 }
                 else
                 {
-                    Console.WriteLine($"Welcome to {storeList.Find(x => x.StoreId == userChoice).Location}!");
+                    Console.WriteLine($"Welcome to {storeList.Find(x => x.StoreId == userChoice).Name}!");
                     mc = MenuChoice.StoreMenu;
                 }
 
@@ -160,7 +186,13 @@ namespace Client
             return mc;
         }
 
-        public static MenuChoice storeMenu(ShoppingLogic shopping)
+        /// <summary>
+        /// Shows the user the Store Menu
+        /// User can choose between start shopping, view previous orders, changing store, or logging out
+        /// </summary>
+        /// <param name="shopping"></param>
+        /// <returns>MenuChoice</returns>
+        public static MenuChoice StoreMenu(ShoppingLogic shopping)
         {
             int userChoice;
             MenuChoice mc = MenuChoice.ShoppingMenu;
@@ -171,8 +203,9 @@ namespace Client
                 Console.WriteLine("----------------------------------------------------------");
                 Console.WriteLine("1: Start Shopping");
                 Console.WriteLine("2: View Previous Orders");
-                Console.WriteLine("3: LOGOUT");
-                userChoice = shopping.validateStoreMenuChoice(Console.ReadLine());
+                Console.WriteLine("3: Change Stores");
+                Console.WriteLine("4: LOGOUT");
+                userChoice = shopping.ValidateStoreMenuChoice(Console.ReadLine());
 
                 switch (userChoice)
                 {
@@ -180,9 +213,12 @@ namespace Client
                         Console.WriteLine("Invalid choice: Please choose by number");
                         break;
                     case 2:
-                        printOrders(shopping);
+                        PrintOrders(shopping);
                         break;
                     case 3:
+                        mc = MenuChoice.StoreListMenu;
+                        break;
+                    case 4:
                         Console.WriteLine("LOGGING OUT!");
                         mc = MenuChoice.MainMenu;
                         break;
@@ -193,10 +229,12 @@ namespace Client
         }
 
         /// <summary>
-        /// Displays shopping menu
+        /// Shows the user the Shopping Menu
+        /// User can choose between adding item to cart, checking out, or logging out
         /// </summary>
         /// <param name="shopping"></param>
-        public static MenuChoice shoppingMenu(ShoppingLogic shopping)
+        /// <returns>MenuChoice</returns>
+        public static MenuChoice ShoppingMenu(ShoppingLogic shopping)
         {
             List<Product> products = shopping.CurrentStore.Products;
             List<Product> cart;
@@ -208,16 +246,16 @@ namespace Client
                 cart = shopping.CurrentCustomer.Cart;
 
                 if (cart.Count != 0)
-                    printCart(cart);
+                    PrintCart(cart);
 
-                Console.WriteLine($"Products in {shopping.CurrentStore.Location}");
+                Console.WriteLine($"Products in {shopping.CurrentStore.Name}");
                 Console.WriteLine("Enter product number to add to cart or view cart, checkout, logout");
                 Console.WriteLine("----------------------------------------------------------");
-                printProducts(products);
+                PrintProduct(products);
                 Console.WriteLine("----------------------------------------------------------");
                 Console.WriteLine($"{maxNum}: Checkout");
                 Console.WriteLine($"{++maxNum}: LOGOUT");
-                userChoice = shopping.validateShoppingMenuChoice(Console.ReadLine(), maxNum);
+                userChoice = shopping.ValidateShoppingMenuChoice(Console.ReadLine(), maxNum);
 
                 if (userChoice == 0)
                     Console.WriteLine("Invalid choice: Please choose by number");
@@ -229,14 +267,15 @@ namespace Client
                 }
                 else if (userChoice == maxNum - 1)
                 {
-                    Console.WriteLine("ORDER SUCCESSFULL");
-                    mc = MenuChoice.OrderSuccsessMenu;
+                    Console.Clear();
+                    mc = MenuChoice.StoreMenu;
+                    shopping.Checkout();
                 }
                 else
                 {
                     Product p = products[userChoice - 1];
                     Console.Clear();
-                    if (shopping.addProductToCart(p))
+                    if (shopping.AddProductToCart(p))
                         Console.WriteLine($"{p.Name} added to cart\n");
                     else
                         Console.WriteLine($"{p.Name} cannot be added to cart due to $500 limit!\n");
@@ -245,16 +284,24 @@ namespace Client
             return mc;
         }
 
-        public static void orderSuccessMenu(ShoppingLogic shopping)
+        /// <summary>
+        /// Shows the user if the order was successfull
+        /// </summary>
+        /// <param name="shopping"></param>
+        /// <returns>MenuChoice</returns>
+        public static MenuChoice OrderSuccessMenu(ShoppingLogic shopping)
         {
-            Console.WriteLine("Testing");
+
+            Console.Clear();
+            Console.WriteLine("ORDER SUCCESSFULL");
+            return MenuChoice.Exit;
         }
 
         /// <summary>
         /// Prints products in store
         /// </summary>
         /// <param name="products"></param>
-        public static void printProducts(List<Product> products)
+        public static void PrintProduct(List<Product> products)
         {
             int index = 1;
             foreach (Product p in products)
@@ -268,7 +315,7 @@ namespace Client
         /// Prints customers cart
         /// </summary>
         /// <param name="cart"></param>
-        public static void printCart(List<Product> cart)
+        public static void PrintCart(List<Product> cart)
         {
             double total = 0.0;
             Console.WriteLine("Current Items In Cart:");
@@ -277,25 +324,30 @@ namespace Client
                 Console.WriteLine($"\t${c.Price} : {c.Name}");
                 total += c.Price;
             }
-            Console.WriteLine($"Total:\t${total}\n");
+            Console.WriteLine($"Total:\t${Math.Round(total, 2)}\n");
         }
 
         /// <summary>
         /// Prints customers previous orders
         /// </summary>
         /// <param name="orders"></param>
-        public static void printOrders(ShoppingLogic shopping)
+        public static void PrintOrders(ShoppingLogic shopping)
         {
             Console.Clear();
-            Console.WriteLine($"Previous orders from {shopping.CurrentStore.Location}");
+            Console.WriteLine($"Previous orders from {shopping.CurrentStore.Name}");
             Console.WriteLine("----------------------------------------------------------");
-            List<Order> orders = shopping.getListOfOrders();
+            List<Order> orders = shopping.GetListOfOrders();
+            int i = 1, j = 1;
             foreach (Order o in orders)
             {
-                Console.WriteLine($"Order Number: {o.OrderId} - Total: ${o.TotalCost}");
+                Console.WriteLine($"Order Number: {i++} - Total: ${o.TotalCost}");
                 foreach (Product p in o.Products)
-                    Console.WriteLine($"\t{p.ProductId}: {p.Name} - {p.Description} = ${p.Price}");
+                {
+                    Console.WriteLine($"\t{j++}: {p.Name} - {p.Description} = ${p.Price}");
+                }
+                j = 1;
             }
+            Console.WriteLine("----------------------------------------------------------\n");
         }
     }
 }

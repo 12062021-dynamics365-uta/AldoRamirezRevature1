@@ -10,61 +10,52 @@ namespace Storage
     {
         string connectionStr = "Data source = ALDITONE-DESKTO\\SQLEXPRESS; initial Catalog=P0-StoreApplication; integrated security = true";
         private readonly SqlConnection connection;
-        private readonly EntityToClassMapper mapper;
+        private readonly Mapper mapper;
 
         public DataBaseAccess()
         {
             this.connection = new SqlConnection(connectionStr);
             this.connection.Open();
+            mapper = new Mapper();
         }
 
         public Customer getCustomer(string userName, string password)
         {
-            string queryString = "SELECT * FROM Customers;";
-            SqlCommand cmd = new SqlCommand(queryString, this.connection);
-            SqlDataReader dr = cmd.ExecuteReader();
+            string queryString = ($"SELECT * FROM Customers WHERE UserName = '{userName}' AND UserPassword = '{password}';");
 
-            Customer c = null;
-
-            while (dr.Read())
+            Customer customer = null;
+            using (SqlCommand cmd = new SqlCommand(queryString, this.connection))
             {
-                if (dr.GetString(3) == userName && dr.GetString(4) == password)
-                    c = new Customer(dr.GetInt32(0), dr.GetString(1), dr.GetString(2));
+                SqlDataReader dr = cmd.ExecuteReader();
+                customer = this.mapper.EntityToCustomer(dr);
+                dr.Close();
             }
-            dr.Close();
-
-            return c;
+            return customer;
         }
 
         public List<Store> getStores()
         {
-            //TODO: Return Stores from database
             string queryString = "SELECT * FROM Stores;";
-            SqlCommand cmd = new SqlCommand(queryString, this.connection);
-            SqlDataReader dr = cmd.ExecuteReader();
-
             List<Store> stores = new List<Store>();
-            
-            while (dr.Read())
-                stores.Add(new Store(dr.GetInt32(0), dr.GetString(1)));
-            dr.Close();
-
+            using (SqlCommand cmd = new SqlCommand(queryString, this.connection))
+            {
+                SqlDataReader dr = cmd.ExecuteReader();
+                stores = this.mapper.EntityToStoreList(dr);
+                dr.Close();
+            }
             return stores;
         }
 
         public List<Product> getStoreProducts(int storeId)
         {
-            //TODO: Return Products per store from database
             string queryString = "SELECT ProductId, ProductName, ProductAmount, ProductDesc FROM Products WHERE StoreId = " + storeId;
-            SqlCommand cmd = new SqlCommand(queryString, this.connection);
-            SqlDataReader dr = cmd.ExecuteReader();
-
             List<Product> products = new List<Product>();
-            //Only for testing purposes
-            while (dr.Read())
-                products.Add(new Product(dr.GetInt32(0), dr.GetString(1), dr.GetString(3), (double)dr.GetDecimal(2)));
-            dr.Close();
-
+            using (SqlCommand cmd = new SqlCommand(queryString, this.connection))
+            {
+                SqlDataReader dr = cmd.ExecuteReader();
+                products = this.mapper.EntityToProductList(dr);
+                dr.Close();
+            }
             return products;
         }
 
@@ -77,26 +68,14 @@ namespace Storage
                 "LEFT JOIN Orders o " +
                 "ON op.OrderId = o.OrderId " +
                 "WHERE o.CustomerId = " + customerId + " AND p.StoreId = " + storeId;
-            SqlCommand cmd = new SqlCommand(queryString, this.connection);
-            SqlDataReader dr = cmd.ExecuteReader();
 
             List<Order> orders = new List<Order>();
-            Order order;
-            while (dr.Read())
+            using (SqlCommand cmd = new SqlCommand(queryString, this.connection))
             {
-                order = new Order();
-                order.OrderId = dr.GetInt32(0);
-                order.TotalCost = (double)dr.GetDecimal(6);
-                if (!orders.Exists(x => x.OrderId == dr.GetInt32(0)))
-                    orders.Add(order);
-                
-                foreach(Order o in orders)
-                {
-                    if (o.OrderId == dr.GetInt32(0))
-                        o.Products.Add(new Product(dr.GetInt32(2), dr.GetString(3), dr.GetString(4), (double)dr.GetDecimal(5)));
-                }
+                SqlDataReader dr = cmd.ExecuteReader();
+                orders = this.mapper.EntityToOrderList(dr);
+                dr.Close();
             }
-            dr.Close();
             return orders;
         }
         
@@ -112,14 +91,26 @@ namespace Storage
             }
         }
 
-        public void addOrder(int customerId, int totalAmount)
+        public int addOrder(int customerId, double totalAmount)
         {
-            //TODO: Add new order to database
+            int newId = 0;
+            string queryString = ($"INSERT INTO Orders (CustomerId, TotalAmount) OUTPUT INSERTED.OrderId VALUES ({customerId}, {(decimal)totalAmount});");
+
+            using (SqlCommand cmd = new SqlCommand(queryString, this.connection))
+            {
+                newId = (int)cmd.ExecuteScalar();
+                return newId;
+            }
         }
 
-        public void addOrderProduct(int OrderId, int productId)
+        public void addOrderProduct(int orderId, int productId)
         {
-            //TODO: Add orderId and productId to OrderProduct junction table
+            string queryString = ($"INSERT INTO OrderProduct (OrderId, ProductId) VALUES ({orderId}, {productId});");
+
+            using (SqlCommand cmd = new SqlCommand(queryString, this.connection))
+            {
+                cmd.ExecuteScalar();
+            }
         }
 
         public void closeDataBaseConnection()
