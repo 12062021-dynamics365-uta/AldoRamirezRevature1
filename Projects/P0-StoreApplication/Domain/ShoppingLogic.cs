@@ -21,11 +21,11 @@ namespace Domain
 
         public bool Login(string userName, string password)
         {
-            Customer customer = _dbContext.getCustomer(userName, password);
+            Customer customer = _dbContext.GetCustomer(userName, password);
             
             if (customer != null)
             {
-                customer.StoreLocations = _dbContext.getStores();
+                customer.StoreLocations = _dbContext.GetStores();
                 CurrentCustomer = customer;
                 return true;
             }
@@ -36,11 +36,18 @@ namespace Domain
             }
         }
 
+        /// <summary>
+        /// Adds new customer to the
+        /// </summary>
+        /// <param name="firstName"></param>
+        /// <param name="lastName"></param>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
         public void Register(string firstName, string lastName, string userName, string password)
         {
-            int id = _dbContext.addCustomer(firstName, lastName, userName, password);
+            int id = _dbContext.AddCustomer(firstName, lastName, userName, password);
             CurrentCustomer = new Customer(id, firstName, lastName);
-            CurrentCustomer.StoreLocations = _dbContext.getStores();
+            CurrentCustomer.StoreLocations = _dbContext.GetStores();
         }
 
         public int ValidateMainMenuChoice(string userInput)
@@ -64,7 +71,7 @@ namespace Domain
             else if (userChoice != numOfChoices + 1)
             {
                 CurrentStore = CurrentCustomer.StoreLocations.Find(x => x.StoreId == userChoice);
-                CurrentStore.Products = _dbContext.getStoreProducts(CurrentStore.StoreId);
+                CurrentStore.Products = _dbContext.GetStoreProducts(CurrentStore.StoreId);
                 InitializePreviousStoreOrders();
             }
 
@@ -109,7 +116,7 @@ namespace Domain
 
         public bool AddProductToCart(Product product)
         {
-            if (CurrentCustomer.Order.TotalCost + product.Price < 500.0)
+            if (CurrentCustomer.Order.TotalCost + product.Price < 500)
             {
                 CurrentCustomer.Cart.Add(product);
                 CurrentCustomer.Order.Products.Add(product);
@@ -125,19 +132,25 @@ namespace Domain
             order.Products = CurrentCustomer.Cart;
             order.TotalCost = Math.Round(CurrentCustomer.Cart.Sum(p => p.Price), 2);
             CurrentCustomer.PastOrders.Add(order);
-            order.OrderId = _dbContext.addOrder(CurrentCustomer.CustomerId, order.TotalCost);
+            order.OrderId = _dbContext.AddOrder(CurrentCustomer.CustomerId, order.TotalCost);
             foreach (Product p in order.Products)
-                _dbContext.addOrderProduct(order.OrderId, p.ProductId);
+                _dbContext.AddOrderProduct(order.OrderId, p.ProductId);
+        }
+
+        public void CancelOrder()
+        {
+            CurrentCustomer.Cart = new List<Product>();
+            CurrentCustomer.Order = new Order();
         }
 
         public void InitializePreviousStoreOrders()
         {
-            CurrentCustomer.PastOrders = _dbContext.getOrders(CurrentCustomer.CustomerId, CurrentStore.StoreId);
+            CurrentCustomer.PastOrders = _dbContext.GetOrders(CurrentCustomer.CustomerId, CurrentStore.StoreId);
         }
 
         public void Exit()
         {
-            _dbContext.closeDataBaseConnection();
+            _dbContext.CloseDataBaseConnection();
         }
     }
 }

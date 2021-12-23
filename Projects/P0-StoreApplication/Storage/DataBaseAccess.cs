@@ -19,11 +19,11 @@ namespace Storage
             mapper = new Mapper();
         }
 
-        public Customer getCustomer(string userName, string password)
+        public Customer GetCustomer(string userName, string password)
         {
             string queryString = ($"SELECT * FROM Customers WHERE UserName = '{userName}' AND UserPassword = '{password}';");
 
-            Customer customer = null;
+            Customer customer;
             using (SqlCommand cmd = new SqlCommand(queryString, this.connection))
             {
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -33,7 +33,7 @@ namespace Storage
             return customer;
         }
 
-        public List<Store> getStores()
+        public List<Store> GetStores()
         {
             string queryString = "SELECT * FROM Stores;";
             List<Store> stores = new List<Store>();
@@ -46,7 +46,7 @@ namespace Storage
             return stores;
         }
 
-        public List<Product> getStoreProducts(int storeId)
+        public List<Product> GetStoreProducts(int storeId)
         {
             string queryString = "SELECT ProductId, ProductName, ProductAmount, ProductDesc FROM Products WHERE StoreId = " + storeId;
             List<Product> products = new List<Product>();
@@ -59,7 +59,7 @@ namespace Storage
             return products;
         }
 
-        public List<Order> getOrders(int customerId, int storeId)
+        public List<Order> GetOrders(int customerId, int storeId)
         {
             string queryString = "SELECT o.OrderId, p.StoreId, p.ProductId, p.ProductName, p.ProductDesc, p.ProductAmount, o.TotalAmount " +
                 "FROM Products p " +
@@ -79,9 +79,9 @@ namespace Storage
             return orders;
         }
         
-        public int addCustomer(string fName, string lName, string uName, string password)
+        public int AddCustomer(string fName, string lName, string uName, string password)
         {
-            int newId = 0;
+            int newId;
             string queryString = ($"INSERT INTO Customers (FirstName, LastName, UserName, UserPassword) OUTPUT INSERTED.CustomerId VALUES ('{fName}', '{lName}', '{uName}', '{password}');");
 
             using (SqlCommand cmd = new SqlCommand(queryString, this.connection))
@@ -91,9 +91,9 @@ namespace Storage
             }
         }
 
-        public int addOrder(int customerId, double totalAmount)
+        public int AddOrder(int customerId, decimal totalAmount)
         {
-            int newId = 0;
+            int newId;
             string queryString = ($"INSERT INTO Orders (CustomerId, TotalAmount) OUTPUT INSERTED.OrderId VALUES ({customerId}, {(decimal)totalAmount});");
 
             using (SqlCommand cmd = new SqlCommand(queryString, this.connection))
@@ -103,7 +103,7 @@ namespace Storage
             }
         }
 
-        public void addOrderProduct(int orderId, int productId)
+        public void AddOrderProduct(int orderId, int productId)
         {
             string queryString = ($"INSERT INTO OrderProduct (OrderId, ProductId) VALUES ({orderId}, {productId});");
 
@@ -113,7 +113,7 @@ namespace Storage
             }
         }
 
-        public void closeDataBaseConnection()
+        public void CloseDataBaseConnection()
         {
             this.connection.Close();
         }
