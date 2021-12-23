@@ -24,6 +24,13 @@ namespace Model
         public List<Store> StoreLocations { get; set; }
         public List<Order> PastOrders { get; set; }
 
+        public Customer()
+        {
+            Order = new Order();
+            Cart = new List<Product>();
+            StoreLocations = new List<Store>();
+            PastOrders = new List<Order>();
+        }
         public Customer(int customerId, string fName, string lName)
         {
             this.CustomerId = customerId;

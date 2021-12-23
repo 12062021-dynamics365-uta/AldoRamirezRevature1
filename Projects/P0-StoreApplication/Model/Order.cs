@@ -25,11 +25,11 @@ namespace Model
             this.TotalCost = 0.0;
         }
 
-        public Order (int orderId, List<Product> products, double totalCost)
+        /*public Order (int orderId, List<Product> products, double totalCost)
         {
             this.OrderId = orderId;
             this.Products = products;
             this.TotalCost = totalCost;
-        }
+        }*/
     }
 }

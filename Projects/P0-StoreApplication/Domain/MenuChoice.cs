@@ -14,6 +14,7 @@ namespace Domain
         StoreListMenu,
         StoreMenu,
         ShoppingMenu,
-        OrderSuccsessMenu
+        OrderSuccsessMenu,
+        Exit
     }
 }

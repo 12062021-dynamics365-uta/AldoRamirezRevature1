@@ -16,12 +16,9 @@ namespace Model
         public String Description { get; set; }
         public double Price { get; set; }
 
-        public Product(int productId, string name, string description, double price)
+        public Product()
         {
-            this.ProductId = productId;
-            this.Name = name;
-            this.Description = description;
-            this.Price = price;
+
         }
     }
 }

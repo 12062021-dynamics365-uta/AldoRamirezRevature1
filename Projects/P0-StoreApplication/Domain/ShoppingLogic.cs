@@ -11,7 +11,6 @@ namespace Domain
     public class ShoppingLogic
     {
         private readonly DataBaseAccess _dbContext;
-        //private List<Customer> customers;
         public Customer CurrentCustomer { get; set; }
         public Store CurrentStore { get; set; }
 
@@ -20,7 +19,7 @@ namespace Domain
             this._dbContext = new DataBaseAccess();
         }
 
-        public bool login(string userName, string password)
+        public bool Login(string userName, string password)
         {
             Customer customer = _dbContext.getCustomer(userName, password);
             
@@ -36,68 +35,79 @@ namespace Domain
                 return false;
             }
         }
-        public void register(string firstName, string lastName, string userName, string password)
+
+        public void Register(string firstName, string lastName, string userName, string password)
         {
             int id = _dbContext.addCustomer(firstName, lastName, userName, password);
             CurrentCustomer = new Customer(id, firstName, lastName);
             CurrentCustomer.StoreLocations = _dbContext.getStores();
         }
 
-        public List<Order> getListOfOrders()
+        public int ValidateMainMenuChoice(string userInput)
+        {
+            int userChoice = ConvertInputToInt(userInput);
+            int numOfChoices = 3;
+
+            if (userChoice > numOfChoices)
+                userChoice = 0;
+
+            return userChoice;
+        }
+
+        public int ValidateStoreChoice(string userInput)
+        {
+            int userChoice = ConvertInputToInt(userInput);
+            int numOfChoices = CurrentCustomer.StoreLocations.Count;
+
+            if (userChoice > numOfChoices + 1)
+                userChoice = 0;
+            else if (userChoice != numOfChoices + 1)
+            {
+                CurrentStore = CurrentCustomer.StoreLocations.Find(x => x.StoreId == userChoice);
+                CurrentStore.Products = _dbContext.getStoreProducts(CurrentStore.StoreId);
+                InitializePreviousStoreOrders();
+            }
+
+            return userChoice;
+        }
+
+        public int ValidateStoreMenuChoice(string userInput)
+        {
+            int userChoice = ConvertInputToInt(userInput);
+            int numOfChoices = 4;
+
+            if (userChoice > numOfChoices)
+                userChoice = 0;
+
+            return userChoice;
+        }
+
+        public int ValidateShoppingMenuChoice(string userInput, int numOfChoices)
+        {
+            int userChoice = ConvertInputToInt(userInput);
+
+            if (userChoice > numOfChoices)
+                userChoice = 0;
+
+            return userChoice;
+        }
+
+        public int ConvertInputToInt(string userInput)
+        {
+            bool conversionBool = Int32.TryParse(userInput, out int convertedNumber);
+
+            if (!conversionBool)
+                convertedNumber = 0;
+
+            return convertedNumber;
+        }
+
+        public List<Order> GetListOfOrders()
         {
             return CurrentCustomer.PastOrders;
         }
-        public int validateMainMenuChoice(string userInput)
-        {
-            int convertedNumber = 0;
-            bool conversionBool = Int32.TryParse(userInput, out convertedNumber);
 
-            if (!conversionBool || convertedNumber < 1 || convertedNumber > 3)
-                convertedNumber = 0;
-
-            return convertedNumber;
-        }
-
-        public int validateStoreChoice(string userInput)
-        {
-            int convertedNumber = 0;
-            bool conversionBool = Int32.TryParse(userInput, out convertedNumber);
-
-            if (!conversionBool || convertedNumber < 1 || convertedNumber > CurrentCustomer.StoreLocations.Count + 1)
-                convertedNumber = 0;
-            else if (convertedNumber != CurrentCustomer.StoreLocations.Count + 1)
-            {
-                CurrentStore = CurrentCustomer.StoreLocations.Find(x => x.StoreId == convertedNumber);
-                CurrentStore.Products = _dbContext.getStoreProducts(CurrentStore.StoreId);
-                initializePreviousStoreOrders();
-            }
-
-            return convertedNumber;
-        }
-
-        public int validateStoreMenuChoice(string userInput)
-        {
-            int convertedNumber = 0;
-            bool conversionBool = Int32.TryParse(userInput, out convertedNumber);
-
-            if (!conversionBool || convertedNumber < 1 || convertedNumber > 3)
-                convertedNumber = 0;
-
-            return convertedNumber;
-        }
-
-        public int validateShoppingMenuChoice(string userInput, int maxNum)
-        {
-            int convertedNumber = 0;
-            bool conversionBool = Int32.TryParse(userInput, out convertedNumber);
-
-            if (!conversionBool || convertedNumber < 1 || convertedNumber > maxNum)
-                convertedNumber = 0;
-
-            return convertedNumber;
-        }
-
-        public bool addProductToCart(Product product)
+        public bool AddProductToCart(Product product)
         {
             if (CurrentCustomer.Order.TotalCost + product.Price < 500.0)
             {
@@ -109,21 +119,25 @@ namespace Domain
             return false;
         }
 
-        public void checkout()
+        public void Checkout()
         {
-
+            Order order = new Order();
+            order.Products = CurrentCustomer.Cart;
+            order.TotalCost = Math.Round(CurrentCustomer.Cart.Sum(p => p.Price), 2);
+            CurrentCustomer.PastOrders.Add(order);
+            order.OrderId = _dbContext.addOrder(CurrentCustomer.CustomerId, order.TotalCost);
+            foreach (Product p in order.Products)
+                _dbContext.addOrderProduct(order.OrderId, p.ProductId);
         }
 
-        public void initializePreviousStoreOrders()
+        public void InitializePreviousStoreOrders()
         {
             CurrentCustomer.PastOrders = _dbContext.getOrders(CurrentCustomer.CustomerId, CurrentStore.StoreId);
         }
 
-        public void exit()
+        public void Exit()
         {
             _dbContext.closeDataBaseConnection();
         }
-
-
     }
 }
