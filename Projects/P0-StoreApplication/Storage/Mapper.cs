@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Model;
 
 namespace Storage
 {
-    public class Mapper
+    public class Mapper : IMapper
     {
+        /// <summary>
+        /// Maps database entity to Customer Object
+        /// </summary>
+        /// <param name="dr">Sql data reader</param>
+        /// <returns>Customer</returns>
         public Customer EntityToCustomer(SqlDataReader dr)
         {
             Customer customer = null;
@@ -26,6 +27,11 @@ namespace Storage
             return customer;
         }
 
+        /// <summary>
+        /// Maps database entity to list of store objects
+        /// </summary>
+        /// <param name="dr">Sql data reader</param>
+        /// <returns>List of stores</returns>
         public List<Store> EntityToStoreList(SqlDataReader dr)
         {
             List<Store> stores = new List<Store>();
@@ -34,7 +40,7 @@ namespace Storage
             {
                 Store s = new Store()
                 {
-                    StoreId = dr.GetInt32(0), 
+                    StoreId = dr.GetInt32(0),
                     Name = dr.GetString(1)
                 };
                 stores.Add(s);
@@ -42,6 +48,11 @@ namespace Storage
             return stores;
         }
 
+        /// <summary>
+        /// Maps database entity to list of product objects
+        /// </summary>
+        /// <param name="dr">Sql data reader</param>
+        /// <returns>List of products</returns>
         public List<Product> EntityToProductList(SqlDataReader dr)
         {
             List<Product> products = new List<Product>();
@@ -60,6 +71,11 @@ namespace Storage
             return products;
         }
 
+        /// <summary>
+        /// Maps database entity to list of orders
+        /// </summary>
+        /// <param name="dr">Sql data reader</param>
+        /// <returns>List of orders</returns>
         public List<Order> EntityToOrderList(SqlDataReader dr)
         {
             List<Order> orders = new List<Order>();
