@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Domain;
 using Model;
+using Storage;
 
 namespace Client
 {
@@ -9,9 +10,10 @@ namespace Client
     {
         static void Main(string[] args)
         {
-            bool exit = false;
             MenuChoice mc = MenuChoice.MainMenu;
-            ShoppingLogic shopping = new ShoppingLogic();
+            Mapper mapper = new Mapper();
+            DataBaseAccess dbAccess = new DataBaseAccess(mapper);
+            ShoppingLogic shopping = new ShoppingLogic(dbAccess);
 
             do//loop until exit
             {
@@ -38,11 +40,8 @@ namespace Client
                     case MenuChoice.OrderSuccsessMenu:
                         mc = OrderSuccessMenu(shopping);
                         break;
-                    case MenuChoice.Exit:
-                        exit = true;
-                        break;
                 }
-            } while (!exit);
+            } while (mc != MenuChoice.Exit);
 
             //Close database connection
             shopping.Exit();
@@ -52,7 +51,7 @@ namespace Client
         /// Shows the user the Main Menu
         /// User can chose between login, register or exiting the program
         /// </summary>
-        /// <param name="shopping"></param>
+        /// <param name="shopping">ShoppingLogic Object</param>
         /// <returns>MenuChoice</returns>
         public static MenuChoice MainMenu(ShoppingLogic shopping)
         {
@@ -92,7 +91,7 @@ namespace Client
         /// <summary>
         /// Shows the user the Login Menu
         /// </summary>
-        /// <param name="shopping"></param>
+        /// <param name="shopping">ShoppingLogic Object</param>
         /// <returns>MenuChoice</returns>
         public static MenuChoice LoginMenu(ShoppingLogic shopping)
         {
@@ -124,7 +123,7 @@ namespace Client
         /// <summary>
         /// Shows the user the Register Menu
         /// </summary>
-        /// <param name="shopping"></param>
+        /// <param name="shopping">ShoppingLogic Object</param>
         /// <returns>MenuChoice</returns>
         public static MenuChoice RegisterMenu(ShoppingLogic shopping)
         {
@@ -152,7 +151,7 @@ namespace Client
         /// Shows the user the Store List Menu
         /// User can choose between stores or to logout
         /// </summary>
-        /// <param name="shopping"></param>
+        /// <param name="shopping">ShoppingLogic Object</param>
         /// <returns>MenuChoice</returns>
         public static MenuChoice StoreListMenu(ShoppingLogic shopping)
         {
@@ -167,7 +166,7 @@ namespace Client
                 foreach (Store s in storeList)
                     Console.WriteLine($"{s.StoreId}: {s.Name}");
                 Console.WriteLine("5: LOGOUT");
-                userChoice = shopping.ValidateStoreChoice(Console.ReadLine());
+                userChoice = shopping.ValidateStoreListMenuChoice(Console.ReadLine());
 
                 Console.Clear();
                 if (userChoice == 0)
@@ -190,7 +189,7 @@ namespace Client
         /// Shows the user the Store Menu
         /// User can choose between start shopping, view previous orders, changing store, or logging out
         /// </summary>
-        /// <param name="shopping"></param>
+        /// <param name="shopping">ShoppingLogic Object</param>
         /// <returns>MenuChoice</returns>
         public static MenuChoice StoreMenu(ShoppingLogic shopping)
         {
@@ -232,7 +231,7 @@ namespace Client
         /// Shows the user the Shopping Menu
         /// User can choose between adding item to cart, checking out, or logging out
         /// </summary>
-        /// <param name="shopping"></param>
+        /// <param name="shopping">ShoppingLogic Object</param>
         /// <returns>MenuChoice</returns>
         public static MenuChoice ShoppingMenu(ShoppingLogic shopping)
         {
@@ -288,7 +287,7 @@ namespace Client
         /// <summary>
         /// Shows the user if the order was successfull
         /// </summary>
-        /// <param name="shopping"></param>
+        /// <param name="shopping">ShoppingLogic Object</param>
         /// <returns>MenuChoice</returns>
         public static MenuChoice OrderSuccessMenu(ShoppingLogic shopping)
         {
@@ -301,7 +300,7 @@ namespace Client
         /// <summary>
         /// Prints products in store
         /// </summary>
-        /// <param name="products"></param>
+        /// <param name="products">ShoppingLogic Object</param>
         public static void PrintProduct(List<Product> products)
         {
             int index = 1;
@@ -315,7 +314,7 @@ namespace Client
         /// <summary>
         /// Prints customers cart
         /// </summary>
-        /// <param name="cart"></param>
+        /// <param name="cart">List of Product</param>
         public static void PrintCart(List<Product> cart)
         {
             decimal total = 0;
@@ -331,7 +330,7 @@ namespace Client
         /// <summary>
         /// Prints customers previous orders
         /// </summary>
-        /// <param name="orders"></param>
+        /// <param name="orders">ShoppingLogic Object</param>
         public static void PrintOrders(ShoppingLogic shopping)
         {
             Console.Clear();

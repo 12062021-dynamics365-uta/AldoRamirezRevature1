@@ -1,28 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Model;
 using Storage;
 
 namespace Domain
 {
-    public class ShoppingLogic
+    public class ShoppingLogic : IShoppingLogic
     {
-        private readonly DataBaseAccess _dbContext;
+        private readonly IDataBaseAccess _dbContext;
         public Customer CurrentCustomer { get; set; }
         public Store CurrentStore { get; set; }
 
-        public ShoppingLogic()
+        public ShoppingLogic(IDataBaseAccess dba)
         {
-            this._dbContext = new DataBaseAccess();
+            this._dbContext = dba;
         }
 
+        /// <summary>
+        /// Logs in user, if data base insert returns null
+        /// </summary>
+        /// <param name="userName">Users username</param>
+        /// <param name="password">Users password</param>
+        /// <returns>bool</returns>
         public bool Login(string userName, string password)
         {
             Customer customer = _dbContext.GetCustomer(userName, password);
-            
+
             if (customer != null)
             {
                 customer.StoreLocations = _dbContext.GetStores();
@@ -39,10 +43,10 @@ namespace Domain
         /// <summary>
         /// Adds new customer to the
         /// </summary>
-        /// <param name="firstName"></param>
-        /// <param name="lastName"></param>
-        /// <param name="userName"></param>
-        /// <param name="password"></param>
+        /// <param name="firstName">Users first name</param>
+        /// <param name="lastName">Users last name</param>
+        /// <param name="userName">Users username</param>
+        /// <param name="password">Users password</param>
         public void Register(string firstName, string lastName, string userName, string password)
         {
             int id = _dbContext.AddCustomer(firstName, lastName, userName, password);
@@ -50,6 +54,11 @@ namespace Domain
             CurrentCustomer.StoreLocations = _dbContext.GetStores();
         }
 
+        /// <summary>
+        /// Validates users choice in the Main Menu
+        /// </summary>
+        /// <param name="userInput">Users Input string</param>
+        /// <returns>int</returns>
         public int ValidateMainMenuChoice(string userInput)
         {
             int userChoice = ConvertInputToInt(userInput);
@@ -61,7 +70,12 @@ namespace Domain
             return userChoice;
         }
 
-        public int ValidateStoreChoice(string userInput)
+        /// <summary>
+        /// Validates user choice in the Store List Menu
+        /// </summary>
+        /// <param name="userInput">Users Input string</param>
+        /// <returns>int</returns>
+        public int ValidateStoreListMenuChoice(string userInput)
         {
             int userChoice = ConvertInputToInt(userInput);
             int numOfChoices = CurrentCustomer.StoreLocations.Count;
@@ -78,6 +92,11 @@ namespace Domain
             return userChoice;
         }
 
+        /// <summary>
+        /// Validates users choice in the Store Menu
+        /// </summary>
+        /// <param name="userInput">Users Input string</param>
+        /// <returns>int</returns>
         public int ValidateStoreMenuChoice(string userInput)
         {
             int userChoice = ConvertInputToInt(userInput);
@@ -89,6 +108,12 @@ namespace Domain
             return userChoice;
         }
 
+        /// <summary>
+        /// Validates users choice in the shopping menu
+        /// </summary>
+        /// <param name="userInput">Users Input string</param>
+        /// <param name="numOfChoices"></param>
+        /// <returns> int</returns>
         public int ValidateShoppingMenuChoice(string userInput, int numOfChoices)
         {
             int userChoice = ConvertInputToInt(userInput);
@@ -99,6 +124,11 @@ namespace Domain
             return userChoice;
         }
 
+        /// <summary>
+        /// Converts user input into integer
+        /// </summary>
+        /// <param name="userInput">Users Input string</param>
+        /// <returns>int</returns>
         public int ConvertInputToInt(string userInput)
         {
             bool conversionBool = Int32.TryParse(userInput, out int convertedNumber);
@@ -109,11 +139,20 @@ namespace Domain
             return convertedNumber;
         }
 
+        /// <summary>
+        /// Gets current customers list of orders
+        /// </summary>
+        /// <returns>List<Order></Order></returns>
         public List<Order> GetListOfOrders()
         {
             return CurrentCustomer.PastOrders;
         }
 
+        /// <summary>
+        /// Adds product to current customers cart
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns>bool</returns>
         public bool AddProductToCart(Product product)
         {
             if (CurrentCustomer.Order.TotalCost + product.Price < 500)
@@ -126,6 +165,11 @@ namespace Domain
             return false;
         }
 
+        /// <summary>
+        /// Checkout current customer, creates new order
+        /// adds it to current customer past orders list
+        /// and adds it to the database
+        /// </summary>
         public void Checkout()
         {
             Order order = new Order();
@@ -137,17 +181,27 @@ namespace Domain
                 _dbContext.AddOrderProduct(order.OrderId, p.ProductId);
         }
 
+        /// <summary>
+        /// Cancels current customers shopping
+        /// clears cart and order
+        /// </summary>
         public void CancelOrder()
         {
             CurrentCustomer.Cart = new List<Product>();
             CurrentCustomer.Order = new Order();
         }
 
+        /// <summary>
+        /// Initializes current customers past orders
+        /// </summary>
         public void InitializePreviousStoreOrders()
         {
             CurrentCustomer.PastOrders = _dbContext.GetOrders(CurrentCustomer.CustomerId, CurrentStore.StoreId);
         }
 
+        /// <summary>
+        /// Closes database connection
+        /// </summary>
         public void Exit()
         {
             _dbContext.CloseDataBaseConnection();

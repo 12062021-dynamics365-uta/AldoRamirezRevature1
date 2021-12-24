@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Testing
 {
-    public class ShoppingLogicTest
+    public class DataBaseMethodsTest
     {
         [Fact]
         public void Test1()
