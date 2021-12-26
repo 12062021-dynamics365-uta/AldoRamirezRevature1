@@ -29,8 +29,8 @@ namespace Domain
 
             if (customer != null)
             {
-                customer.StoreLocations = _dbContext.GetStores();
                 CurrentCustomer = customer;
+                InitializeStores();
                 return true;
             }
             else
@@ -51,6 +51,14 @@ namespace Domain
         {
             int id = _dbContext.AddCustomer(firstName, lastName, userName, password);
             CurrentCustomer = new Customer(id, firstName, lastName);
+            InitializeStores();
+        }
+
+        /// <summary>
+        /// Initializes current customers store list
+        /// </summary>
+        public void InitializeStores()
+        {
             CurrentCustomer.StoreLocations = _dbContext.GetStores();
         }
 
@@ -80,16 +88,32 @@ namespace Domain
             int userChoice = ConvertInputToInt(userInput);
             int numOfChoices = CurrentCustomer.StoreLocations.Count;
 
-            if (userChoice > numOfChoices + 1)
+            if (userChoice > numOfChoices + 1 || userChoice == 0)
                 userChoice = 0;
             else if (userChoice != numOfChoices + 1)
             {
                 CurrentStore = CurrentCustomer.StoreLocations.Find(x => x.StoreId == userChoice);
-                CurrentStore.Products = _dbContext.GetStoreProducts(CurrentStore.StoreId);
+                InitializeCurrentStoreProducts();
                 InitializePreviousStoreOrders();
             }
 
             return userChoice;
+        }
+
+        /// <summary>
+        /// Initializes the current store products
+        /// </summary>
+        public void InitializeCurrentStoreProducts()
+        {
+            CurrentStore.Products = _dbContext.GetStoreProducts(CurrentStore.StoreId);
+        }
+
+        /// <summary>
+        /// Initializes current customers past orders
+        /// </summary>
+        public void InitializePreviousStoreOrders()
+        {
+            CurrentCustomer.PastOrders = _dbContext.GetOrders(CurrentCustomer.CustomerId, CurrentStore.StoreId);
         }
 
         /// <summary>
@@ -100,7 +124,7 @@ namespace Domain
         public int ValidateStoreMenuChoice(string userInput)
         {
             int userChoice = ConvertInputToInt(userInput);
-            int numOfChoices = 4;
+            int numOfChoices = CurrentCustomer.StoreLocations.Count;
 
             if (userChoice > numOfChoices)
                 userChoice = 0;
@@ -155,7 +179,8 @@ namespace Domain
         /// <returns>bool</returns>
         public bool AddProductToCart(Product product)
         {
-            if (CurrentCustomer.Order.TotalCost + product.Price < 500)
+            if (CurrentCustomer.Order.TotalCost + product.Price < 500 &&
+                CurrentCustomer.Cart.Count < 50)
             {
                 CurrentCustomer.Cart.Add(product);
                 CurrentCustomer.Order.Products.Add(product);
@@ -166,19 +191,48 @@ namespace Domain
         }
 
         /// <summary>
+        /// Uses linq to get products and their quantities from cart
+        /// </summary>
+        /// <returns>IEnumerable</returns>
+        public IEnumerable<KeyValuePair<(string Name, decimal Price), int>> ConvertCartToIEnum()
+        {
+            var q = CurrentCustomer.Cart
+                .GroupBy(x => (x.Name, x.Price))
+                .Select(group => new KeyValuePair<(string Name, decimal Price), int>((group.Key.Name, group.Key.Price), group.Count()));
+
+            return q;
+        }
+
+        /// <summary>
+        /// Uses linq to get products and their quantities from past orders
+        /// </summary>
+        /// <param name="i">Past Orders index</param>
+        /// <returns>IEnumerable</returns>
+        public IEnumerable<KeyValuePair<(string Name, decimal Price), int>> ConvertOrdersToIEnum(int i)
+        {
+
+            var q = CurrentCustomer.PastOrders[i].Products
+                .GroupBy(x => (x.Name, x.Price))
+                .Select(group => new KeyValuePair<(string Name, decimal Price), int>((group.Key.Name, group.Key.Price), group.Count()));
+
+            return q;
+        }
+
+        /// <summary>
         /// Checkout current customer, creates new order
         /// adds it to current customer past orders list
         /// and adds it to the database
         /// </summary>
         public void Checkout()
         {
-            Order order = new Order();
-            order.Products = CurrentCustomer.Cart;
-            order.TotalCost = Math.Round(CurrentCustomer.Cart.Sum(p => p.Price), 2);
-            CurrentCustomer.PastOrders.Add(order);
-            order.OrderId = _dbContext.AddOrder(CurrentCustomer.CustomerId, order.TotalCost);
-            foreach (Product p in order.Products)
-                _dbContext.AddOrderProduct(order.OrderId, p.ProductId);
+            CurrentCustomer.Order.OrderId = _dbContext.AddOrder(CurrentCustomer.CustomerId, CurrentCustomer.Order.TotalCost);
+            CurrentCustomer.PastOrders.Add(CurrentCustomer.Order);
+
+            foreach (Product p in CurrentCustomer.Order.Products)
+                _dbContext.AddOrderProduct(CurrentCustomer.Order.OrderId, p.ProductId);
+
+            CurrentCustomer.Cart = new List<Product>();
+            CurrentCustomer.Order = new Order();
         }
 
         /// <summary>
@@ -189,14 +243,6 @@ namespace Domain
         {
             CurrentCustomer.Cart = new List<Product>();
             CurrentCustomer.Order = new Order();
-        }
-
-        /// <summary>
-        /// Initializes current customers past orders
-        /// </summary>
-        public void InitializePreviousStoreOrders()
-        {
-            CurrentCustomer.PastOrders = _dbContext.GetOrders(CurrentCustomer.CustomerId, CurrentStore.StoreId);
         }
 
         /// <summary>

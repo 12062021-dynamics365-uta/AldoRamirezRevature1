@@ -85,7 +85,8 @@ namespace Storage
                 Order order = new Order()
                 {
                     OrderId = dr.GetInt32(0),
-                    TotalCost = dr.GetDecimal(6)
+                    TotalCost = dr.GetDecimal(6),
+                    Products = new List<Product>()
                 };
 
                 if (!orders.Exists(x => x.OrderId == dr.GetInt32(0)))

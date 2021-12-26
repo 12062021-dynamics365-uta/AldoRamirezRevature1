@@ -17,5 +17,12 @@ namespace Model
         {
             Products = new List<Product>();
         }
+
+        public Store(int storeId, string storeName)
+        {
+            this.StoreId = storeId;
+            this.Name = storeName;
+            Products = new List<Product>();
+        }
     }
 }

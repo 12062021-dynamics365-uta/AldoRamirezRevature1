@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Domain;
 using Model;
 using Storage;
@@ -114,7 +115,7 @@ namespace Client
                 else
                 {
                     loggedIn = false;
-                    Console.WriteLine("Invalid user name or password: Please try again!");
+                    Console.WriteLine("Invalid user name or password: Please try again!\n");
                 }
             } while (!loggedIn);
             return MenuChoice.StoreListMenu;
@@ -170,7 +171,7 @@ namespace Client
 
                 Console.Clear();
                 if (userChoice == 0)
-                    Console.WriteLine("Invalid choice: Please choose by number");
+                    Console.WriteLine("Invalid choice: Please choose by number\n");
                 else if (userChoice == storeList.Count + 1)
                 {
                     Console.WriteLine("LOGGING OUT!");
@@ -209,7 +210,8 @@ namespace Client
                 switch (userChoice)
                 {
                     case 0:
-                        Console.WriteLine("Invalid choice: Please choose by number");
+                        Console.Clear();
+                        Console.WriteLine("Invalid choice: Please choose by number\n");
                         break;
                     case 2:
                         PrintOrders(shopping);
@@ -245,10 +247,10 @@ namespace Client
                 cart = shopping.CurrentCustomer.Cart;
 
                 if (cart.Count != 0)
-                    PrintCart(cart);
+                    PrintCart(shopping);
 
                 Console.WriteLine($"Products in {shopping.CurrentStore.Name}");
-                Console.WriteLine("Enter product number to add to cart or view cart, checkout, logout");
+                Console.WriteLine("Enter product number to add to cart, checkout, or logout");
                 Console.WriteLine("----------------------------------------------------------");
                 PrintProduct(products);
                 Console.WriteLine("----------------------------------------------------------");
@@ -257,11 +259,13 @@ namespace Client
                 userChoice = shopping.ValidateShoppingMenuChoice(Console.ReadLine(), maxNum);
 
                 if (userChoice == 0)
-                    Console.WriteLine("Invalid choice: Please choose by number");
+                {
+                    Console.Clear();
+                    Console.WriteLine("Invalid choice: Please choose by number\n");
+                }
                 else if (userChoice == maxNum)
                 {
                     Console.Clear();
-                    Console.WriteLine("Canceling Shopping!");
                     shopping.CancelOrder();
                     mc = MenuChoice.StoreMenu;
                 }
@@ -278,9 +282,9 @@ namespace Client
                     if (shopping.AddProductToCart(p))
                         Console.WriteLine($"{p.Name} added to cart\n");
                     else
-                        Console.WriteLine($"{p.Name} cannot be added to cart due to $500 limit!\n");
+                        Console.WriteLine($"{p.Name} cannot be added to cart due to $500 or 50 item limit!\n");
                 }
-            } while (userChoice == 0 || userChoice >= 1 && userChoice <= products.Count);
+            } while (userChoice == 0 || (userChoice >= 1 && userChoice <= products.Count));
             return mc;
         }
 
@@ -315,16 +319,19 @@ namespace Client
         /// Prints customers cart
         /// </summary>
         /// <param name="cart">List of Product</param>
-        public static void PrintCart(List<Product> cart)
+        public static void PrintCart(ShoppingLogic shopping)
         {
             decimal total = 0;
+
+            var q = shopping.ConvertCartToIEnum();
+
             Console.WriteLine("Current Items In Cart:");
-            foreach (Product c in cart)
+            foreach (var x in q)
             {
-                Console.WriteLine($"\t${c.Price} : {c.Name}");
-                total += c.Price;
+                Console.WriteLine(string.Format("{0, 8}x {1, -25}{2, 7}", x.Value, x.Key.Name, (x.Value * x.Key.Price)));
+                total += x.Key.Price * x.Value;
             }
-            Console.WriteLine($"Total:\t${Math.Round(total, 2)}\n");
+            Console.WriteLine(string.Format("{0, 35}{1,7}\n", "Total:", ($"${total}")));
         }
 
         /// <summary>
@@ -337,17 +344,16 @@ namespace Client
             Console.WriteLine($"Previous orders from {shopping.CurrentStore.Name}");
             Console.WriteLine("----------------------------------------------------------");
             List<Order> orders = shopping.GetListOfOrders();
-            int i = 1, j = 1;
+            int i = 1, j = 0;
             foreach (Order o in orders)
             {
-                Console.WriteLine($"Order Number: {i++} - Total: ${o.TotalCost}");
-                foreach (Product p in o.Products)
-                {
-                    Console.WriteLine($"\t{j++}: {p.Name} - {p.Description} = ${p.Price}");
-                }
-                j = 1;
+                Console.WriteLine($"Order Number: {i++}");
+                var q = shopping.ConvertOrdersToIEnum(j++);
+                foreach (var x in q)
+                   Console.WriteLine(string.Format("{0, 8}x {1, -25}{2, 7}", x.Value, x.Key.Name, (x.Value * x.Key.Price)));
+
+                Console.WriteLine(string.Format("{0, 35}{1, 7}\n", "Total: ", ($"${o.TotalCost}")));
             }
-            Console.WriteLine("----------------------------------------------------------\n");
         }
     }
 }
