@@ -212,7 +212,7 @@ namespace Testing
         }
 
         [Fact]
-        public void PrettyPrintCartProductsTest()
+        public void ConvertCartToIEnumTest()
         {
             MockDataBaseAccess mockDataBase = new MockDataBaseAccess();
             ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
@@ -243,7 +243,7 @@ namespace Testing
         }
 
         [Fact]
-        public void PrettyPrintOrderProductsTest()
+        public void ConvertOrdersToIEnumTest()
         {
             MockDataBaseAccess mockDataBase = new MockDataBaseAccess();
             ShoppingLogic shopping = new ShoppingLogic(mockDataBase);

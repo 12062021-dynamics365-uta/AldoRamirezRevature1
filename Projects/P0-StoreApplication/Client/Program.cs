@@ -109,16 +109,35 @@ namespace Client
                 Console.Write("Enter Password: ");
                 string password = Console.ReadLine();
 
-                Console.Clear();
                 if (shopping.Login(userName, password))
                 {
+                    Console.Clear();
                     loggedIn = true;
                     Console.WriteLine($"Welcome back {shopping.CurrentCustomer.Fname} {shopping.CurrentCustomer.Lname}");
                 }
                 else
                 {
                     loggedIn = false;
-                    Console.WriteLine("Invalid user name or password: Please try again!\n");
+                    //Console.WriteLine("Invalid user name or password: Please try again!\n");
+                    Console.WriteLine("\nInvalid user name or password: Try again or register new account");
+                    Console.WriteLine("1: Try Again");
+                    Console.WriteLine("2: Register");
+                    int userChoice = shopping.ConvertInputToInt(Console.ReadLine());
+                    switch(userChoice)
+                    {
+                        case 0:
+                            Console.WriteLine("Invalid choice: Please choose by number\n");
+                            break;
+                        case 1:
+                            break;
+                        case 2:
+                            Console.Clear();
+                            return MenuChoice.RegisterMenu;
+                        default:
+                            Console.WriteLine("Invalid choice: Please choose by number\n");
+                            break;
+                    }
+                    Console.Clear();
                 }
             } while (!loggedIn);
             return MenuChoice.StoreListMenu;
