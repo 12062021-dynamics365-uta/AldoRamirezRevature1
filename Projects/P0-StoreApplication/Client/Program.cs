@@ -318,6 +318,7 @@ namespace Client
             return mc;
         }
 
+
         public static MenuChoice RemoveItemFromCartMenu(ShoppingLogic shopping)
         {
             List<Product> products = shopping.CurrentStore.Products;
