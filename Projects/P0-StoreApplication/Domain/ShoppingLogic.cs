@@ -219,20 +219,51 @@ namespace Domain
         }
 
         /// <summary>
+        /// Uses linq to get last order products and their quantities
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<KeyValuePair<(string Name, decimal Price), int>> ConvertSuccsessfullOrderToEnum()
+        {
+            var q = CurrentCustomer.PastOrders[^1].Products
+                .GroupBy(x => (x.Name, x.Price))
+                .Select(group => new KeyValuePair<(string Name, decimal Price), int>((group.Key.Name, group.Key.Price), group.Count()));
+
+            return q;
+        }
+        
+        /// <summary>
         /// Checkout current customer, creates new order
         /// adds it to current customer past orders list
         /// and adds it to the database
         /// </summary>
-        public void Checkout()
+        public bool Checkout()
         {
-            CurrentCustomer.Order.OrderId = _dbContext.AddOrder(CurrentCustomer.CustomerId, CurrentCustomer.Order.TotalCost);
-            CurrentCustomer.PastOrders.Add(CurrentCustomer.Order);
+            if (CurrentCustomer.Cart.Count != 0)
+            {
+                CurrentCustomer.Order.OrderId = _dbContext.AddOrder(CurrentCustomer.CustomerId, CurrentCustomer.Order.TotalCost);
+                CurrentCustomer.PastOrders.Add(CurrentCustomer.Order);
 
-            foreach (Product p in CurrentCustomer.Order.Products)
-                _dbContext.AddOrderProduct(CurrentCustomer.Order.OrderId, p.ProductId);
+                foreach (Product p in CurrentCustomer.Order.Products)
+                    _dbContext.AddOrderProduct(CurrentCustomer.Order.OrderId, p.ProductId);
 
-            CurrentCustomer.Cart = new List<Product>();
-            CurrentCustomer.Order = new Order();
+                CurrentCustomer.Cart = new List<Product>();
+                CurrentCustomer.Order = new Order();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Removes item from cart and order
+        /// </summary>
+        /// <param name="product"></param>
+        public void RemoveItemFromCart(Product product)
+        {
+            CurrentCustomer.Cart.Remove(product);
+            CurrentCustomer.Order.Products.Remove(product);
+            CurrentCustomer.Order.TotalCost -= product.Price;
         }
 
         /// <summary>
