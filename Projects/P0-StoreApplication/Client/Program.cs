@@ -38,6 +38,9 @@ namespace Client
                     case MenuChoice.ShoppingMenu:
                         mc = ShoppingMenu(shopping);
                         break;
+                    case MenuChoice.RemoveItemsMenu:
+                        mc = RemoveItemFromCartMenu(shopping);
+                        break;
                     case MenuChoice.OrderSuccsessMenu:
                         mc = OrderSuccessMenu(shopping);
                         break;
@@ -106,16 +109,35 @@ namespace Client
                 Console.Write("Enter Password: ");
                 string password = Console.ReadLine();
 
-                Console.Clear();
                 if (shopping.Login(userName, password))
                 {
+                    Console.Clear();
                     loggedIn = true;
                     Console.WriteLine($"Welcome back {shopping.CurrentCustomer.Fname} {shopping.CurrentCustomer.Lname}");
                 }
                 else
                 {
                     loggedIn = false;
-                    Console.WriteLine("Invalid user name or password: Please try again!\n");
+                    //Console.WriteLine("Invalid user name or password: Please try again!\n");
+                    Console.WriteLine("\nInvalid user name or password: Try again or register new account");
+                    Console.WriteLine("1: Try Again");
+                    Console.WriteLine("2: Register");
+                    int userChoice = shopping.ConvertInputToInt(Console.ReadLine());
+                    switch(userChoice)
+                    {
+                        case 0:
+                            Console.WriteLine("Invalid choice: Please choose by number\n");
+                            break;
+                        case 1:
+                            break;
+                        case 2:
+                            Console.Clear();
+                            return MenuChoice.RegisterMenu;
+                        default:
+                            Console.WriteLine("Invalid choice: Please choose by number\n");
+                            break;
+                    }
+                    Console.Clear();
                 }
             } while (!loggedIn);
             return MenuChoice.StoreListMenu;
@@ -240,7 +262,7 @@ namespace Client
             List<Product> products = shopping.CurrentStore.Products;
             List<Product> cart;
             MenuChoice mc = MenuChoice.ShoppingMenu;
-            int userChoice = 0;
+            int userChoice;
             do
             {
                 int maxNum = products.Count + 1;
@@ -254,7 +276,8 @@ namespace Client
                 Console.WriteLine("----------------------------------------------------------");
                 PrintProduct(products);
                 Console.WriteLine("----------------------------------------------------------");
-                Console.WriteLine($"{maxNum}: Checkout");
+                Console.WriteLine($"{maxNum}: Remove Item From Cart");
+                Console.WriteLine($"{++maxNum}: Checkout");
                 Console.WriteLine($"{++maxNum}: Cancel");
                 userChoice = shopping.ValidateShoppingMenuChoice(Console.ReadLine(), maxNum);
 
@@ -269,11 +292,18 @@ namespace Client
                     shopping.CancelOrder();
                     mc = MenuChoice.StoreMenu;
                 }
+                else if (userChoice == maxNum - 2)
+                {
+                    Console.Clear();
+                    mc = MenuChoice.RemoveItemsMenu;
+                }
                 else if (userChoice == maxNum - 1)
                 {
                     Console.Clear();
-                    mc = MenuChoice.OrderSuccsessMenu;
-                    shopping.Checkout();
+                    if (shopping.Checkout())
+                        mc = MenuChoice.OrderSuccsessMenu;
+                    else
+                        Console.WriteLine("No products in cart!\n");
                 }
                 else
                 {
@@ -288,6 +318,67 @@ namespace Client
             return mc;
         }
 
+        public static MenuChoice RemoveItemFromCartMenu(ShoppingLogic shopping)
+        {
+            List<Product> products = shopping.CurrentStore.Products;
+            List<Product> cart;
+            MenuChoice mc = MenuChoice.RemoveItemsMenu;
+            int userChoice;
+            do
+            {
+                int maxNum = products.Count + 1;
+                cart = shopping.CurrentCustomer.Cart;
+                if (!cart.Any())
+                {
+                    Console.WriteLine("Cart is empty\n");
+                    mc = MenuChoice.ShoppingMenu;
+                    break;
+                }
+                PrintCart(shopping);
+                Console.WriteLine("Enter product number to remove from cart");
+                Console.WriteLine("----------------------------------------------------------");
+                PrintProduct(products);
+                Console.WriteLine("----------------------------------------------------------");
+                Console.WriteLine($"{maxNum}: Checkout");
+                Console.WriteLine($"{++maxNum}: Back");
+                userChoice = shopping.ValidateShoppingMenuChoice(Console.ReadLine(), maxNum);
+
+                if (userChoice == 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Invalid choice: Please choose by number\n");
+                }
+                else if (userChoice == maxNum)
+                {
+                    Console.Clear();
+                    mc = MenuChoice.ShoppingMenu;
+                }
+                else if (userChoice == maxNum - 1)
+                {
+                    Console.Clear();
+                    if(shopping.Checkout())
+                        mc = MenuChoice.OrderSuccsessMenu;
+                    else
+                        Console.WriteLine("No products in cart!\n");
+                }
+                else
+                {
+                    Product p = products[userChoice - 1];
+                    Console.Clear();
+                    if (cart.Contains(p))
+                    {
+                        shopping.RemoveItemFromCart(p);
+                        Console.WriteLine($"{p.Name} removed from cart\n");
+                    }
+                    else
+                        Console.WriteLine($"{p.Name} not in cart\n");
+                }
+
+            } while (userChoice == 0 || (userChoice >= 1 && userChoice <= products.Count));
+
+            return mc;
+        }
+
         /// <summary>
         /// Shows the user if the order was successfull
         /// </summary>
@@ -297,7 +388,17 @@ namespace Client
         {
 
             Console.Clear();
-            Console.WriteLine($"ORDER SUCCESSFULL");
+            Console.WriteLine($"ORDER SUCCESSFULL\n");
+            decimal total = 0;
+            var q = shopping.ConvertSuccsessfullOrderToEnum();
+
+            foreach (var x in q)
+            {
+                Console.WriteLine(string.Format("{0, 8}x {1, -25}{2, 7}", x.Value, x.Key.Name, (x.Value * x.Key.Price)));
+                total += x.Key.Price * x.Value;
+            }
+            Console.WriteLine(string.Format("{0, 35}{1,7}\n", "Total:", ($"${total}")));
+
             return MenuChoice.StoreMenu;
         }
 
@@ -341,19 +442,25 @@ namespace Client
         public static void PrintOrders(ShoppingLogic shopping)
         {
             Console.Clear();
-            Console.WriteLine($"Previous orders from {shopping.CurrentStore.Name}");
-            Console.WriteLine("----------------------------------------------------------");
             List<Order> orders = shopping.GetListOfOrders();
-            int i = 1, j = 0;
-            foreach (Order o in orders)
-            {
-                Console.WriteLine($"Order Number: {i++}");
-                var q = shopping.ConvertOrdersToIEnum(j++);
-                foreach (var x in q)
-                   Console.WriteLine(string.Format("{0, 8}x {1, -25}{2, 7}", x.Value, x.Key.Name, (x.Value * x.Key.Price)));
 
-                Console.WriteLine(string.Format("{0, 35}{1, 7}\n", "Total: ", ($"${o.TotalCost}")));
+            if (orders.Count != 0)
+            {
+                Console.WriteLine($"Previous orders from {shopping.CurrentStore.Name}");
+                Console.WriteLine("----------------------------------------------------------");
+                int i = 1, j = 0;
+                foreach (Order o in orders)
+                {
+                    Console.WriteLine($"Order Number: {i++}");
+                    var q = shopping.ConvertOrdersToIEnum(j++);
+                    foreach (var x in q)
+                        Console.WriteLine(string.Format("{0, 8}x {1, -25}{2, 7}", x.Value, x.Key.Name, (x.Value * x.Key.Price)));
+
+                    Console.WriteLine(string.Format("{0, 35}{1, 7}\n", "Total: ", ($"${o.TotalCost}")));
+                }
             }
+            else
+                Console.WriteLine($"No Previous orders in {shopping.CurrentStore.Name}");
         }
     }
 }

@@ -8,6 +8,7 @@
         StoreListMenu,
         StoreMenu,
         ShoppingMenu,
+        RemoveItemsMenu,
         OrderSuccsessMenu,
         Exit
     }

@@ -1,4 +1,3 @@
-using System;
 using Xunit;
 using Model;
 using Domain;
@@ -213,7 +212,7 @@ namespace Testing
         }
 
         [Fact]
-        public void PrettyPrintCartProductsTest()
+        public void ConvertCartToIEnumTest()
         {
             MockDataBaseAccess mockDataBase = new MockDataBaseAccess();
             ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
@@ -244,7 +243,7 @@ namespace Testing
         }
 
         [Fact]
-        public void PrettyPrintOrderProductsTest()
+        public void ConvertOrdersToIEnumTest()
         {
             MockDataBaseAccess mockDataBase = new MockDataBaseAccess();
             ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
@@ -294,13 +293,38 @@ namespace Testing
             shopping.CurrentCustomer.Order.Products = products;
             shopping.CurrentCustomer.Order.TotalCost = 7;
 
-            shopping.Checkout();
+            bool successfull = shopping.Checkout();
 
             Assert.Empty(shopping.CurrentCustomer.Cart);
 
+            Assert.True(successfull);
             Assert.Equal(0, shopping.CurrentCustomer.Order.OrderId);
             Assert.Equal(0, shopping.CurrentCustomer.Order.TotalCost);
             Assert.Empty(shopping.CurrentCustomer.Order.Products);
+        }
+
+        [Fact]
+        public void RemoveItemFromCartTest()
+        {
+            MockDataBaseAccess mockDataBase = new MockDataBaseAccess();
+            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
+            shopping.CurrentCustomer = new Customer();
+
+            Product product1 = new Product { ProductId = 1, Name = "Product1", Description = "Product description 1", Price = 1 };
+            Product product2 = new Product { ProductId = 1, Name = "Product1", Description = "Product description 1", Price = 1 };
+            Product product3 = new Product { ProductId = 2, Name = "Product2", Description = "Product description 2", Price = 2 };
+            List<Product> products = new List<Product>() { product1, product2, product3 };
+
+            shopping.CurrentCustomer.Cart = products;
+            shopping.CurrentCustomer.Order.Products = products;
+            shopping.CurrentCustomer.Order.TotalCost = 4;
+
+            shopping.RemoveItemFromCart(product1);
+
+            Assert.Equal(2, shopping.CurrentCustomer.Order.Products.Count);
+            Assert.Equal(2, shopping.CurrentCustomer.Cart.Count);
+
+            Assert.Equal(3, shopping.CurrentCustomer.Order.TotalCost);
         }
 
         [Fact]

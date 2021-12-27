@@ -10,7 +10,7 @@ namespace Domain
 
         bool AddProductToCart(Product product);
         void CancelOrder();
-        void Checkout();
+        bool Checkout();
         int ConvertInputToInt(string userInput);
         void Exit();
         List<Order> GetListOfOrders();
