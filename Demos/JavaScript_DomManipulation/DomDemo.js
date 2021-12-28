@@ -12,9 +12,11 @@ submitTodo.innerText = 'Submit A New Todo!';
 document.write('<br>');
 document.write('<br>');
 
+//create title input
 let listTitleElem = document.createElement('input');
 document.body.appendChild(listTitleElem);
 
+//create change title button
 let submitTitle = document.createElement('button');
 document.body.appendChild(submitTitle);
 submitTitle.innerText = 'Submit A New Title!';
@@ -38,7 +40,7 @@ submitTodo.addEventListener('click', (event) => {
     let text = inputElem.value;
     if(text.trim().length != 0)
     {
-        if(text.trim().length <= 40)
+        if(text.trim().length <= 30)
         {
             let myLi = document.createElement('li');
             myLi.innerText = `${text}`;
@@ -58,7 +60,7 @@ inputElem.addEventListener('keypress', (event) => {
     {
         if(text.trim().length != 0)
         {
-            if(text.trim().length <= 40)
+            if(text.trim().length <= 30)
             {
                 let myLi = document.createElement('li');
                 myLi.innerText = `${text}`;
@@ -78,7 +80,7 @@ submitTitle.addEventListener('click', (event) => {
 
     if(text.trim().length != 0)
     {
-        if(text.trim().length <= 40)
+        if(text.trim().length <= 30)
         {
             title.innerText = text;
         }
@@ -96,7 +98,7 @@ listTitleElem.addEventListener('keypress', (event) => {
     {
         if(text.trim().length != 0)
         {
-            if(text.trim().length <= 40)
+            if(text.trim().length <= 30)
             {
                 title.innerText = text;
             }
@@ -107,6 +109,7 @@ listTitleElem.addEventListener('keypress', (event) => {
         listTitleElem.focus();
     }
 });
+
 //delete on click
 //bubbling
 todoList.addEventListener('click', (event) => {
