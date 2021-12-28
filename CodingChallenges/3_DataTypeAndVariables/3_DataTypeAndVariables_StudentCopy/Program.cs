@@ -36,9 +36,12 @@ namespace _3_DataTypeAndVariablesChallenge
             long myLong = 9223372036854775807;
             Console.WriteLine($"{myLong} {PrintValues(myLong)}");
             ulong myUlong = 18446744073709551615;
-            Console.WriteLine($"{myUlong} {PrintValues(myUlong)}");
+            Console.WriteLine($"{myUlong} {PrintValues(myUlong)}\n");
 
-            //String to Int
+            string notInt = "I control text";
+            string isInt = "20";
+            Console.WriteLine($"String To Int: {notInt} = {StringToInt(notInt).ToString()}");
+            Console.WriteLine($"String To Int: {isInt} = {StringToInt(isInt)}");
         }
 
         /// <summary>
@@ -99,8 +102,12 @@ namespace _3_DataTypeAndVariablesChallenge
         /// <returns></returns>
         public static int? StringToInt(string numString)
         {
-            bool isInt;
-            return null;
+            bool isInt = Int32.TryParse(numString, out int convertedInt);
+
+            if (isInt)
+                return convertedInt;
+            else
+                return null;
         }
     }// end of class
 }// End of Namespace
