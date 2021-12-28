@@ -6,11 +6,52 @@ namespace StringManipulationChallenge
     {
         static void Main(string[] args)
         {
-            /*
-            *
-            * implement the required code here and within the methods below.
-            *
-            */
+            //StringToUpper
+            string toUpper;
+            Console.Write("Enter a lowercase string: ");
+            toUpper = StringToUpper(Console.ReadLine());
+            Console.WriteLine($"New string is: {toUpper}\n");
+
+            //StringToLower
+            string toLower;
+            Console.Write("Enter an uppercase string: ");
+            toLower = StringToLower(Console.ReadLine());
+            Console.WriteLine($"New string is: {toLower}\n");
+
+            //StringTrim
+            string trim;
+            Console.Write("Enter string with whitespace before and after: ");
+            trim = StringTrim(Console.ReadLine());
+            Console.WriteLine($"New string is: {trim}\n");
+
+            //StringSubstring
+            string testString = "This is a string!";
+            Console.WriteLine(testString);
+            Console.Write("Enter an start index to get substring from string above: ");
+            int index = Int32.Parse(Console.ReadLine());
+            Console.Write("Enter the length of the substring: ");
+            int length = Int32.Parse(Console.ReadLine());
+            string subString = StringSubstring(testString, index, length);
+            Console.WriteLine($"Substring: {subString}\n");
+
+            //SearchChar
+            string input;
+            char a;
+            Console.Write("Enter a string: ");
+            input = Console.ReadLine();
+            Console.Write("Enter a char you want to search for: ");
+            a = char.Parse(Console.ReadLine());
+            int charIndex = SearchChar(input, a);
+            Console.WriteLine($"Index of char {a} is {charIndex}\n");
+
+            //ConcatNames
+            string fName, lName, fullName;
+            Console.Write("Enter first name: ");
+            fName = Console.ReadLine();
+            Console.Write("Enter last name: ");
+            lName = Console.ReadLine();
+            fullName = ConcatNames(fName, lName);
+            Console.WriteLine($"Hello {fullName}!");
         }
 
         /// <summary>
@@ -22,7 +63,7 @@ namespace StringManipulationChallenge
         /// <returns></returns>
         public static string StringToUpper(string usersString)
         {
-            zthrow new NotImplementedException("StringToUpper method not implemented.");
+            return usersString.ToUpper();
         }
 
         /// <summary>
@@ -34,7 +75,7 @@ namespace StringManipulationChallenge
         /// <returns></returns>       
         public static string StringToLower(string usersString)
         {
-            throw new NotImplementedException("StringToUpper method not implemented.");
+            return usersString.ToLower();
         }
 
         /// <summary>
@@ -47,7 +88,7 @@ namespace StringManipulationChallenge
         /// <returns></returns>
         public static string StringTrim(string usersStringWithWhiteSpace)
         {
-            throw new NotImplementedException("StringTrim method not implemented.");
+            return usersStringWithWhiteSpace.Trim();
         }
 
         /// <summary>
@@ -62,7 +103,7 @@ namespace StringManipulationChallenge
         /// <returns></returns>
         public static string StringSubstring(string x, int firstElement, int lengthOfSubsring)
         {
-            throw new NotImplementedException("StringSubstring method not implemented.");
+            return x.Substring(firstElement, lengthOfSubsring);
         }
 
         /// <summary>
@@ -77,7 +118,7 @@ namespace StringManipulationChallenge
         /// <returns></returns>
         public static int SearchChar(string userInputString, char charUserWants)
         {
-            throw new NotImplementedException("SearchChar method not implemented.");
+            return userInputString.IndexOf(charUserWants);
         }
 
         /// <summary>
@@ -92,7 +133,7 @@ namespace StringManipulationChallenge
         /// <returns></returns>
         public static string ConcatNames(string fName, string lName)
         {
-            throw new NotImplementedException("ConcatNames method not implemented.");
+            return $"{fName} {lName}";
         }
     }//end of program
 }
