@@ -53,7 +53,7 @@ namespace _3_DataTypeAndVariablesChallenge
         /// <returns></returns>
         public static string PrintValues(object obj)
         {
-           switch(Type.GetTypeCode(obj.GetType()))
+            switch (Type.GetTypeCode(obj.GetType()))
             {
                 case TypeCode.Byte:
                     return "Data type => byte";
