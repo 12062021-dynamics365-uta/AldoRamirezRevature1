@@ -6,11 +6,39 @@ namespace _3_DataTypeAndVariablesChallenge
     {
         public static void Main(string[] args)
         {
-            //
-            //
-            // Insert code here.
-            //
-            //
+            //Print Values
+            byte myByte = 255;
+            Console.WriteLine($"{myByte} {PrintValues(myByte)}");
+            sbyte mySbyte = -128;
+            Console.WriteLine($"{mySbyte} {PrintValues(mySbyte)}");
+            int myInt = 2147483647;
+            Console.WriteLine($"{myInt} {PrintValues(myInt)}");
+            uint myUint = 4294967295;
+            Console.WriteLine($"{myUint} {PrintValues(myUint)}");
+            short myShort = -32768;
+            Console.WriteLine($"{myShort} {PrintValues(myShort)}");
+            ushort myUShort = 65535;
+            Console.WriteLine($"{myUShort} {PrintValues(myUShort)}");
+            float myFloat = -31.1289f;
+            Console.WriteLine($"{myFloat} {PrintValues(myFloat)}");
+            double myDouble = -12.1231250;
+            Console.WriteLine($"{myDouble} {PrintValues(myDouble)}");
+            char myCharacter = 'A';
+            Console.WriteLine($"{myCharacter} {PrintValues(myCharacter)}");
+            bool myBool = true;
+            Console.WriteLine($"{myBool} {PrintValues(myBool)}");
+            string myText = "I control text";
+            Console.WriteLine($"{myText} {PrintValues(myText)}");
+            string numString = "15";
+            Console.WriteLine($"{numString} {PrintValues(numString)}");
+            decimal myDecimal = 3.001002003m;
+            Console.WriteLine($"{myDecimal} {PrintValues(myDecimal)}");
+            long myLong = 9223372036854775807;
+            Console.WriteLine($"{myLong} {PrintValues(myLong)}");
+            ulong myUlong = 18446744073709551615;
+            Console.WriteLine($"{myUlong} {PrintValues(myUlong)}");
+
+            //String to Int
         }
 
         /// <summary>
@@ -25,7 +53,39 @@ namespace _3_DataTypeAndVariablesChallenge
         /// <returns></returns>
         public static string PrintValues(object obj)
         {
-            throw new NotImplementedException($"PrintValues() has not been implemented");
+            switch (Type.GetTypeCode(obj.GetType()))
+            {
+                case TypeCode.Byte:
+                    return "Data type => byte";
+                case TypeCode.SByte:
+                    return "Data type => sbyte";
+                case TypeCode.Int32:
+                    return "Data type => int";
+                case TypeCode.UInt32:
+                    return "Data type => uint";
+                case TypeCode.Int16:
+                    return "Data type => short";
+                case TypeCode.UInt16:
+                    return "Data type => ushort";
+                case TypeCode.Single:
+                    return "Data type => float";
+                case TypeCode.Double:
+                    return "Data type => double";
+                case TypeCode.Char:
+                    return "Data type => char";
+                case TypeCode.Boolean:
+                    return "Data type => bool";
+                case TypeCode.String:
+                    return "Data type => string";
+                case TypeCode.Decimal:
+                    return "Data type => decimal";
+                case TypeCode.Int64:
+                    return "Data type => long";
+                case TypeCode.UInt64:
+                    return "Data type => ulong";
+                default:
+                    return "Data type => object";
+            }
         }
 
         /// <summary>
@@ -39,8 +99,8 @@ namespace _3_DataTypeAndVariablesChallenge
         /// <returns></returns>
         public static int? StringToInt(string numString)
         {
-            throw new NotImplementedException($"StringToInt() has not been implemented");
-
+            bool isInt;
+            return null;
         }
     }// end of class
 }// End of Namespace
