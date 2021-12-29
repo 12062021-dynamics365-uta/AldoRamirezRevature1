@@ -10,15 +10,16 @@ namespace _9_ClassesChallenge
         private string fName;
         private string lName;
         private string eyeColor;
-        private int age;
+        private int? age;
         private int weight;
-
         public int Weight { 
             get {return weight; } 
             set 
             {
-                if (weight < 0 || weight > 400)
+                if (value < 0 || value > 400)
                     weight = 0;
+                else
+                    weight = value;
             } 
         }
 
@@ -54,7 +55,14 @@ namespace _9_ClassesChallenge
 
         public string AboutMe2()
         {
-            if(eyeColor.)
+            if (eyeColor == null && age == null)
+                return $"My name is {fName} {lName}.";
+            else if (eyeColor == null)
+                return $"My name is {fName} {lName}. My age is {age}.";
+            else if (age == null)
+                return $"My name is {fName} {lName}. My eye color is {eyeColor}.";
+            else
+                return $"My name is {fName} {lName}. My age is {age}. My eye color is {eyeColor}.";
         }
     }
 }
