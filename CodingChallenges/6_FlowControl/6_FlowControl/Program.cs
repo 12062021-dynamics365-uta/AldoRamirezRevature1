@@ -4,8 +4,15 @@ namespace _6_FlowControl
 {
     public class Program
     {
+        public static string userName;
+        public static string password;
         static void Main(string[] args)
         {
+            Register();
+            Login();
+            int temp = GetValidTemperature();
+            GiveActivityAdvice(temp);
+            GetTemperatureTernary(temp);
         }
 
         /// <summary>
@@ -15,7 +22,30 @@ namespace _6_FlowControl
         /// <returns></returns>
         public static int GetValidTemperature()
         {
-            throw new NotImplementedException($"GetValidTemperature() has not been implemented.");
+            int temp;
+            bool valid;
+
+            do
+            {
+                Console.Write("Please Enter A Farhrenheit Temperature: ");
+                valid = int.TryParse(Console.ReadLine(), out temp);
+
+                if (valid)
+                {
+                    if (temp < -40 || temp > 135)
+                    {
+                        Console.WriteLine("Invalid input must be between -40 and 135");
+                        valid = false;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input not a number!");
+                    valid = false;
+                }
+
+            } while (!valid);
+            return temp;
         }
 
         /// <summary>
@@ -35,7 +65,24 @@ namespace _6_FlowControl
         /// <param name="temp"></param>
         public static void GiveActivityAdvice(int temp)
         {
-            throw new NotImplementedException($"GiveActivityAdvice() has not been implemented.");
+            if (temp < -20)
+                Console.WriteLine("hella cold");
+            else if (-20 <= temp && temp < 0)
+                Console.WriteLine("pretty cold");
+            else if (0 <= temp && temp < 20)
+                Console.WriteLine("cold");
+            else if (20 <= temp && temp < 40)
+                Console.WriteLine("thawed out");
+            else if (40 <= temp && temp < 60)
+                Console.WriteLine("feels like Autumn");
+            else if (60 <= temp && temp < 80)
+                Console.WriteLine("perfect outdoor workout temperature");
+            else if (80 <= temp && temp < 90)
+                Console.WriteLine("niiice");
+            else if (90 <= temp && temp < 100)
+                Console.WriteLine("hella hot");
+            else if (100 <= temp && temp <= 135)
+                Console.WriteLine("hottest");
         }
 
         /// <summary>
@@ -45,7 +92,12 @@ namespace _6_FlowControl
         /// </summary>
         public static void Register()
         {
-            throw new NotImplementedException($"Register() has not been implemented.");
+            Console.WriteLine("Enter username and password to register:");
+            Console.Write("Username: ");
+            userName = Console.ReadLine();
+            Console.Write("Password: ");
+            password = Console.ReadLine();
+            Console.WriteLine("User saved!\n");
         }
 
         /// <summary>
@@ -58,7 +110,27 @@ namespace _6_FlowControl
         /// <returns></returns>
         public static bool Login()
         {
-            throw new NotImplementedException($"Login() has not been implemented.");
+            bool loggedIn;
+            do
+            {
+                Console.WriteLine("Enter username and password to login:");
+                Console.Write("Username: ");
+                string tempUserName = Console.ReadLine();
+                Console.Write("Password: ");
+                string tempPassword = Console.ReadLine();
+                if(tempUserName == userName && tempPassword == password)
+                {
+                    Console.WriteLine($"\n{userName} logged in!");
+                    loggedIn = true;
+                }
+                else
+                {
+                    Console.WriteLine("\nInvalid user name or password!");
+                    loggedIn = false;
+                }
+            } while (!loggedIn);
+
+            return loggedIn;
         }
 
         /// <summary>
@@ -71,7 +143,9 @@ namespace _6_FlowControl
         /// <param name="temp"></param>
         public static void GetTemperatureTernary(int temp)
         {
-            throw new NotImplementedException($"GetTemperatureTernary() has not been implemented.");
+            string advice;
+            advice = temp <= 42 ? $"{temp} is too cold!" : temp <= 78 ? $"{temp} is an ok temperature" : $"{temp} is too hot!";
+            Console.WriteLine(advice);
         }
     }//EoP
 }//EoN
