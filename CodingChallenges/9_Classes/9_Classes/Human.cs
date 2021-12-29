@@ -12,12 +12,12 @@ namespace _9_ClassesChallenge
         public Human ()
         {
             fName = "Pat";
-            fName = "Smyth";
+            lName = "Smyth";
         }
         public Human (string fName, string lName)
         {
             this.fName = fName;
-            this.fName = lName;
+            this.lName = lName;
         }
 
         public string AboutMe()

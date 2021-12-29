@@ -27,26 +27,24 @@ namespace _9_ClassesChallenge
             fName = "Pat";
             lName = "Smyth";
         }
-        public Human2(string fName, string lName, string eyeColor = "", int age = 0)
+        public Human2(string fName, string lName, string eyeColor, int age)
         {
             this.fName = fName;
             this.lName = lName;
             this.eyeColor = eyeColor;
             this.age = age;
         }
-        public Human2(string fName, string lName, string eyeColor = "")
+        public Human2(string fName, string lName, int age)
+        {
+            this.fName = fName;
+            this.lName = lName;
+            this.age = age;
+        }
+        public Human2(string fName, string lName, string eyeColor)
         {
             this.fName = fName;
             this.lName = lName;
             this.eyeColor = eyeColor;
-            this.age = 0;
-        }
-        public Human2(string fName, string lName, int age = 0)
-        {
-            this.fName = fName;
-            this.lName = lName;
-            this.eyeColor = "";
-            this.age = age;
         }
 
         public string AboutMe()
@@ -56,13 +54,7 @@ namespace _9_ClassesChallenge
 
         public string AboutMe2()
         {
-            if (age != 0 && eyeColor != "")
-                return ($"My name is {fName} {lName}. My age is {age}. My eye color is {eyeColor}.");
-            else if (eyeColor != "")
-                return ($"My name is {fName} {lName}. My eye color is {eyeColor}.");
-            else if (age != 0)
-                return ($"My name is {fName} {lName}. My age is {age}.");
-            return "";
+            if(eyeColor.)
         }
     }
 }
