@@ -7,8 +7,7 @@ namespace _8_LoopsChallenge
     {
         public static void Main(string[] args)
         {
-            /* Your code here */
-
+            
         }
 
         /// <summary>
@@ -18,7 +17,13 @@ namespace _8_LoopsChallenge
         /// <returns></returns>
         public static int UseFor(List<int> x)
         {
-            throw new NotImplementedException("UseFor() is not implemented yet.");
+            int odds = 0;
+            for(int i = 0; i < x.Count; i++)
+            {
+                if (x[i] % 2 != 0)
+                    odds++;
+            }
+            return odds;
         }
 
         /// <summary>
@@ -29,7 +34,38 @@ namespace _8_LoopsChallenge
         /// <returns></returns>
         public static int UseForEach(List<object> x)
         {
-            throw new NotImplementedException("UseForEach() is not implemented yet.");
+            int evens = 0;
+            foreach (object i in x)
+            {
+                switch(Type.GetTypeCode(i.GetType()))
+                {
+                    case TypeCode.Int16:
+                        if ((Int16)i % 2 == 0)
+                            evens++;
+                        break;
+                    case TypeCode.Int32:
+                        if ((Int32)i % 2 == 0)
+                            evens++;
+                        break;
+                    case TypeCode.Int64:
+                        if ((Int64)i % 2 == 0)
+                            evens++;
+                        break;
+                    case TypeCode.UInt16:
+                        if ((UInt16)i % 2 == 0)
+                            evens++;
+                        break;
+                    case TypeCode.UInt32:
+                        if ((UInt32)i % 2 == 0)
+                            evens++;
+                        break;
+                    case TypeCode.UInt64:
+                        if ((UInt64)i % 2 == 0)
+                            evens++;
+                        break;
+                }
+            }
+            return evens;
         }
 
         /// <summary>
@@ -40,7 +76,17 @@ namespace _8_LoopsChallenge
         /// <param name="x"></param>
         public static int UseWhile(List<int> x)
         {
-            throw new NotImplementedException("UseFor() is not implemented yet.");
+            int count = 0;
+            int multipleCnt = 0;
+            while(count < x.Count)
+            {
+                if (x[count] % 4 == 0)
+                    multipleCnt++;
+                if (x[count] == 1234)
+                    break;
+                count ++;
+            }
+            return multipleCnt;
         }
 
         /// <summary>
@@ -51,7 +97,14 @@ namespace _8_LoopsChallenge
         /// <returns></returns>
         public static int UseForThreeFour(int[] x)
         {
-            throw new NotImplementedException("UseForThreeFour() is not implemented yet.");
+            int multiples = 0;
+
+            for(int i = 0; i < x.Length; i++)
+            {
+                if (x[i] % 4 == 0 && x[i] % 3 == 0)
+                    multiples++;
+            }
+            return multiples;
         }
 
         /// <summary>
@@ -62,7 +115,13 @@ namespace _8_LoopsChallenge
         /// <returns></returns>
         public static string LoopdyLoop(List<string>[] stringListArray)
         {
-            throw new NotImplementedException("LoopdyLoop() is not implemented yet.");
+            string sentence = "";
+            foreach (List<string> str in stringListArray)
+            {
+                foreach (string s in str)
+                    sentence += s + " ";
+            }
+            return sentence;
         }
     }
 }
