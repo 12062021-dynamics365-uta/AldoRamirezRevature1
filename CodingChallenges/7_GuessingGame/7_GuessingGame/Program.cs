@@ -7,7 +7,40 @@ namespace _7_GuessingGameChallenge
     {
         public static void Main(string[] args)
         {
-           
+            bool playAgain;
+
+            Console.WriteLine("Welcome to the guessing game, the computer will generate\n" +
+                "a number between 0 and 100. Your goal is to try and guess that number\n" +
+                "within 10 tries! Good Luck!");
+            Console.WriteLine("------------------------------------------------------------------------");
+            do
+            {
+                int roundCnt = 1;
+                int randNumber = GetRandomNumber();
+                List<int> guesses = new List<int>();
+
+                while (roundCnt <= 10)
+                {
+                    int userNumber = GetUsersGuess();
+                    guesses.Add(userNumber);
+
+                    int result = CompareNums(randNumber, userNumber);
+                    if (result == 0)
+                    {
+                        Console.WriteLine("\nCongratulations you guessed right!");
+                        break;
+                    }
+                    else if (result == 1)
+                        Console.WriteLine("You guessed to low!");
+                    else
+                        Console.WriteLine("You guessed to high!");
+
+                    Console.Write($"Your guesses: {string.Join(", ", guesses)}\n\n");
+                    roundCnt++;
+                }
+                playAgain = PlayGameAgain();
+                Console.WriteLine();
+            } while (playAgain);
         }
 
         /// <summary>
@@ -16,7 +49,7 @@ namespace _7_GuessingGameChallenge
         /// <returns></returns>
         public static int GetRandomNumber()
         {
-            throw new NotImplementedException();
+            return new Random().Next(0, 101);
         }
 
         /// <summary>
@@ -27,7 +60,23 @@ namespace _7_GuessingGameChallenge
         /// <returns></returns>
         public static int GetUsersGuess()
         {
-            throw new NotImplementedException();
+            int number;
+            bool isValid;
+            do
+            {
+                Console.Write("Enter a number between 0 and 100: ");
+                isValid = Int32.TryParse(Console.ReadLine(), out number);
+                if (!isValid)
+                    Console.WriteLine("\nError: Invalid input!");
+
+                if (number < 0 || number > 100)
+                {
+                    Console.WriteLine("\nError: Number must be between 0 and 100!");
+                    isValid = false;
+                }
+            } while (!isValid);
+
+            return number;
         }
 
         /// <summary>
@@ -43,7 +92,12 @@ namespace _7_GuessingGameChallenge
         /// <returns></returns>
         public static int CompareNums(int randomNum, int guess)
         {
-            throw new NotImplementedException();
+            if (randomNum == guess)
+                return 0;
+            else if (randomNum < guess)
+                return -1;
+            else
+                return 1;
         }
 
         /// <summary>
@@ -54,7 +108,13 @@ namespace _7_GuessingGameChallenge
         /// <exception cref="NotImplementedException"></exception>
         public static bool PlayGameAgain()
         {
-            throw new NotImplementedException();
+            Console.Write("Type yes if you want to play again: ");
+            string input = Console.ReadLine();
+
+            if (input.ToLower() == "yes")
+                return true;
+            else
+                return false;
         }
     }
 }
