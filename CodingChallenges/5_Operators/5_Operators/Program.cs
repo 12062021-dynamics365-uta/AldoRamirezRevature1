@@ -6,7 +6,23 @@ namespace _5_OperatorsChallenge
     {
         public static void Main(string[] args)
         {
+            Console.Write("Enter the first number: ");
+            Int32.TryParse(Console.ReadLine(), out int num1);
+            Console.Write("Enter the second number: ");
+            Int32.TryParse(Console.ReadLine(), out int num2);
 
+            Console.WriteLine($"\n{num1} incremented is = {Increment(num1)}\n");
+            Console.WriteLine($"{num2} decremented is = {Decrement(num2)}\n");
+            Console.WriteLine($"True not is {Not(true)}\n");
+            Console.WriteLine($"False not is {Not(false)}\n");
+            Console.WriteLine($"{num2} negated is = {Negate(num2)}\n");
+            Console.WriteLine($"{num1} + {num2} = {Sum(num1, num2)}\n");
+            Console.WriteLine($"{num1} - {num2} = {Diff(num1, num2)}\n");
+            Console.WriteLine($"{num1} * {num2} = {Product(num1, num2)}\n");
+            Console.WriteLine($"{num1} / {num2} = {Quotient(num1, num2)}\n");
+            Console.WriteLine($"{num1} % {num2} = {Remainder(num1, num2)}\n");
+            Console.WriteLine($"Is {num1} >= {num2} : {And(num1, num2)}\n");
+            Console.WriteLine($"Is {num1} > {num2} || {num1} < 0 : {Or(num1, num2)}\n");
         }
 
         /// <summary>
@@ -125,7 +141,7 @@ namespace _5_OperatorsChallenge
         /// <returns></returns>
         public static bool Or(int num1, int num2)
         {
-            return (num1 > num2 || num1 > 0);
+            return (num1 > num2 || num1 < 0);
         }
     }
 }
