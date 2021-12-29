@@ -28,7 +28,6 @@ let fiveJokeButton = document.createElement('button');
 document.body.appendChild(fiveJokeButton);
 fiveJokeButton.innerText = 'Push For 5 Jokes';
 let myDiv = document.createElement('div');
-let myPar = document.createElement('p');
 
 fiveJokeButton.onclick = () => {
     fetch('http://api.icndb.com/jokes/random/5')
@@ -37,10 +36,16 @@ fiveJokeButton.onclick = () => {
             console.log(`There was an error in the request ${err}`);
         }
         else {
-            myDiv.appendChild(myPar);
             document.body.appendChild(myDiv);
+            //myPar.innerText = res.value.joke
             return res.json();
         }
     })
-    .then(res => myPar.innerText = res.value.joke);
+    .then(res => {
+        for(let i = 0; i < res.value.length; i++) {
+            let myPar = document.createElement('p');
+            myDiv.appendChild(myPar);
+            myPar.innerText = res.value[i].joke;
+        }
+    });
 };
