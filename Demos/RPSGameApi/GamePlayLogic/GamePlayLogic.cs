@@ -1,10 +1,10 @@
 ﻿using System;
 using Models;
-using DataBaseAccess;
+using Storage;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GamePlayLogic
+namespace Domain
 {
     public class GamePlayLogic : IGamePlayLogic
     {

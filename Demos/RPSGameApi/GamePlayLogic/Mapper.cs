@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Models;
 
-namespace GamePlayLogic
+namespace Domain
 {
     //this class will hold the methods to map what is returned from the Db to a known object within the Application here.
     public class Mapper : IMapper

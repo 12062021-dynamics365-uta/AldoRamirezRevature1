@@ -1,3 +1,4 @@
+using Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain;
 
 namespace RPS_GameApi
 {
@@ -28,6 +30,14 @@ namespace RPS_GameApi
         {
             //This is where you will add
             //// DI (Dependency Injections)
+            ///Three types of lifetimes for objects:
+            ///Scoped = there is an instance of the object created for every call cycle in with the object is needed.
+            ///Singleton = one instance of the object created that lasts the lifetime of the compiliation.
+            ///Transient = one object created and destroyed every time it's needed.
+            services.AddScoped<IDataBaseAccess, DataBaseAccess>();
+            services.AddScoped<IGamePlayLogic, GamePlayLogic>();
+            services.AddScoped<IMapper, Mapper>();
+
             //// CORS
 
             services.AddControllers();
