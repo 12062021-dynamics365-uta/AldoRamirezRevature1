@@ -5,11 +5,11 @@ VisualStudioVersion = 16.0.31911.196
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RPS_GameApi", "RPS_GameApi\RPS_GameApi.csproj", "{03047207-9114-483A-B501-8D7A5B06467E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataBaseAccess", "DataBaseAccess\DataBaseAccess.csproj", "{5B8EA138-50B8-47B0-8D3A-7AA0DFD9AF6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Storage", "DataBaseAccess\Storage.csproj", "{5B8EA138-50B8-47B0-8D3A-7AA0DFD9AF6E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{25E6BF69-9EE3-456C-B0D5-3BC3B7497B5A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamePlayLogic", "GamePlayLogic\GamePlayLogic.csproj", "{2704133E-AC5D-45BE-A28C-147A4237E0CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "GamePlayLogic\Domain.csproj", "{2704133E-AC5D-45BE-A28C-147A4237E0CF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.RPS_GameApi", "Tests\Tests.RPS_GameApi.csproj", "{9C0CC30D-BBF0-4EB1-8BB3-D091CC2A8ECD}"
 EndProject

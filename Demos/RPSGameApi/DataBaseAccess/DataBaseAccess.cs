@@ -3,9 +3,9 @@ using Models;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 
-namespace DataBaseAccess
+namespace Storage
 {
-    internal class DataBaseAccess : IDataBaseAccess
+    public class DataBaseAccess : IDataBaseAccess
     {
         // in readl life you dont want to keep your Cnn String here.... 
         // it will be pushed t our GitHub and anyone could see it.
