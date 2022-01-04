@@ -2,6 +2,7 @@
 using Models;
 using System.Data.SqlClient;
 using System.Collections.Generic;
+using System.Data;
 
 namespace Storage
 {
@@ -9,16 +10,14 @@ namespace Storage
     {
         // in readl life you dont want to keep your Cnn String here.... 
         // it will be pushed t our GitHub and anyone could see it.
-        private readonly string str = "Data source =MARKCMOORE\\SQLEXPRESS;initial Catalog=RpsGameDb; integrated security =true";
+        private readonly string str = "Data source = ALDITONE-DESKTO\\SQLEXPRESS; initial Catalog=RPSGameDB; integrated security = true";
         private readonly SqlConnection _con;
-        //private readonly IMapper _mapper;
 
         //constructor
-        public DataBaseAccess(/*IMapper mapper*/)
+        public DataBaseAccess()
         {
             this._con = new SqlConnection(this.str);
             _con.Open();
-            //this._mapper = mapper;
         }
 
         public List<Player> GetAllPlayers()
@@ -32,6 +31,22 @@ namespace Storage
                 this._con.Close();// make sure this class is Transient... not songleton or Scoped.
             }
             return players;
+        }
+
+        public SqlDataReader Login(string fname, string lname)
+        {
+            string sqlQuery = "SELECT TOP 1 * FROM Players WHERE FirstName = @fname and LastName = @lname;";
+
+
+            using (SqlCommand cmd = new SqlCommand(sqlQuery, this._con))
+            {
+                cmd.Parameters.AddWithValue("@fname", fname);
+                cmd.Parameters.AddWithValue("@lname", lname);
+
+                SqlDataReader dr = cmd.ExecuteReader();
+                //this._con.Close();// make sure this class is Transient... not songleton or Scoped.
+                return dr;
+            }
         }
     }
 }

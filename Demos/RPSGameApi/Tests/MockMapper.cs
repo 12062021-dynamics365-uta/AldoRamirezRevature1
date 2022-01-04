@@ -1,15 +1,12 @@
-﻿using System;
+﻿using Domain;
+using Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Models;
 
-namespace Domain
+namespace Tests.RPS_GameApi
 {
-    //this class will hold the methods to map what is returned from the Db to a known object within the Application here.
-    public class Mapper : IMapper
+    internal class MockMapper : IMapper
     {
         public Player EntityToPlayer(SqlDataReader dr)
         {
@@ -24,7 +21,6 @@ namespace Domain
                     Losses = dr.GetInt32(3),
                     Wins = dr.GetInt32(4)
                 };
-                dr.Close();
                 return p;
             }
 

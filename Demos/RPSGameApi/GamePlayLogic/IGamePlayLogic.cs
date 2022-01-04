@@ -12,7 +12,7 @@ namespace Domain
         Player WinnerYet();
         List<Player> GetAllPlayers();
         List<Game> PrintUsersGames();
-        void Login(string userFName, string userLName);
+        Player Login(string userFName, string userLName);
         void StartNewGame();
         void ResetGame();
         Choice ValidateUserChoice(string choice);

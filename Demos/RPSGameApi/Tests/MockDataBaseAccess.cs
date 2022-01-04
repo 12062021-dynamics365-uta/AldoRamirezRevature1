@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,6 +41,12 @@ namespace Tests.RPS_GameApi
             players.Add(p3);
 
             return players;
+        }
+
+        public SqlDataReader Login(string fname, string lname)
+        {
+            
+            return null;
         }
     }
 }
