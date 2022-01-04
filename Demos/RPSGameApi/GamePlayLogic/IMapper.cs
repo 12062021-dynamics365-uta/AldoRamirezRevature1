@@ -11,5 +11,6 @@ namespace Domain
     public interface IMapper
     {
         List<Player> EntityToPlayerList(SqlDataReader dr);
+        Player EntityToPlayer(SqlDataReader dr);
     }
 }

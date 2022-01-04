@@ -3,6 +3,7 @@ using Models;
 using Storage;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.SqlClient;
 
 namespace Domain
 {
@@ -14,14 +15,16 @@ namespace Domain
         private Game currentGame;
         private Player currentLoggedInPlayer;
         private readonly IDataBaseAccess _dataBaseAccess;
+        private readonly IMapper _mapper;
 
         //constructor
-        public GamePlayLogic(IDataBaseAccess dba)
+        public GamePlayLogic(IDataBaseAccess dba, IMapper mapper)
         {
             players = new List<Player>();
             games = new List<Game>();
             randNum = new Random();
             this._dataBaseAccess = dba;
+            this._mapper = mapper;
         }
         // overload constructor that is called as the first constructor or the first game after compilation
         public GamePlayLogic(string fname, string lname)
@@ -57,15 +60,19 @@ namespace Domain
         /// </summary>
         /// <param name="userFName"></param>
         /// <param name="userLName"></param>
-        public void Login(string userFName, string userLName)
+        public Player Login(string fname, string lname)
         {
-            //throw new NotImplementedException("Hey, dinkus... make a body for game.login()");
-            //foreach (Player p in players)
-            //{
-            //    if (p.Fname == userFName && p.Lname == userLName) this.currentLoggedInPlayer = p;
-            //}
+            //Call the DbAccess method to get the user with these credentials
+            //if non null result, then th eplayer is returned to the client
+            SqlDataReader dr = _dataBaseAccess.Login(fname, lname);
 
-            Player p = players.Where(p => p.Fname == userFName && p.Lname == userLName).FirstOrDefault();
+            //run the return through the mapper to return a Player (or null)
+            Player p = _mapper.EntityToPlayer(dr);
+
+            return p;
+            #region old code
+            //cant use this bc state can't be helo in the API (thats what the db is for
+            /*Player p = players.Where(p => p.Fname == userFName && p.Lname == userLName).FirstOrDefault();
 
             if (p == null)
             {
@@ -77,7 +84,8 @@ namespace Domain
             else
             {
                 this.currentLoggedInPlayer = p;
-            }
+            }*/
+            #endregion
         }
 
         /// <summary>
