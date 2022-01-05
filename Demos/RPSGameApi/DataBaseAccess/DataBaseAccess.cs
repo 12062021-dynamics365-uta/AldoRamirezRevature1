@@ -45,9 +45,9 @@ namespace Storage
 
                 SqlDataReader dr = cmd.ExecuteReader();
 
-                DataTable players = new DataTable("Players");
-                players.Load(dr);
-                DataTableReader dtr = players.CreateDataReader();
+                DataTable table = new DataTable("Players");
+                table.Load(dr);
+                DataTableReader dtr = table.CreateDataReader();
 
                 //this._con.Close();// make sure this class is Transient... not songleton or Scoped.
                 dr.Close();
