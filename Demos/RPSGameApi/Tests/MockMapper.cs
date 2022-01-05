@@ -2,13 +2,14 @@
 using Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace Tests.RPS_GameApi
 {
     internal class MockMapper : IMapper
     {
-        public Player EntityToPlayer(SqlDataReader dr)
+        public Player EntityToPlayer(DataTableReader dr)
         {
             //call dr.read method
             if (dr.Read())

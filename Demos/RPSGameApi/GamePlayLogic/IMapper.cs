@@ -1,6 +1,7 @@
 ﻿using Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,6 @@ namespace Domain
     public interface IMapper
     {
         List<Player> EntityToPlayerList(SqlDataReader dr);
-        Player EntityToPlayer(SqlDataReader dr);
+        Player EntityToPlayer(DataTableReader dr);
     }
 }
