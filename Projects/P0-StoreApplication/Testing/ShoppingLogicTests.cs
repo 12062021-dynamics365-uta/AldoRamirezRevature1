@@ -9,12 +9,12 @@ namespace Testing
 {
     public class ShoppingLogicTests
     {
+        public static IDataBaseAccess mockDataBase = new MockDataBaseAccess();
+        public static ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
+
         [Fact]
         public void LoginUserTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
-
             bool login = shopping.Login("Alditone", "12345");
             Customer customer = shopping.CurrentCustomer;
 
@@ -27,9 +27,6 @@ namespace Testing
         [Fact]
         public void RegisterUserTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
-
             shopping.Register("Aldo", "Ramirez", "Alditone", "12345");
             Customer customer = shopping.CurrentCustomer;
 
@@ -41,9 +38,6 @@ namespace Testing
         [Fact]
         public void InitializeStoresTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
-
             shopping.CurrentCustomer = new Customer();
             shopping.InitializeStores();
             List<Store> stores = shopping.CurrentCustomer.StoreLocations;
@@ -58,9 +52,6 @@ namespace Testing
         [Fact]
         public void ValidateMainMenuChoiceTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
-
             int validChoice = shopping.ValidateMainMenuChoice("1");
             int invalidChoice = shopping.ValidateMainMenuChoice("4");
 
@@ -71,9 +62,6 @@ namespace Testing
         [Fact]
         public void ValidateStoreListMenuChoiceTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
-
             shopping.Login("Alditone", "12345");
             int storeCount = shopping.CurrentCustomer.StoreLocations.Count + 2;
 
@@ -87,9 +75,6 @@ namespace Testing
         [Fact]
         public void InitializeCurrentStoreProductsTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
-
             shopping.CurrentStore = new Store();
             shopping.InitializeCurrentStoreProducts();
             List<Product> products = shopping.CurrentStore.Products;
@@ -108,9 +93,6 @@ namespace Testing
         [Fact]
         public void InitializePreviousStoreOrdersTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
-
             shopping.CurrentCustomer = new Customer();
             shopping.CurrentStore = new Store();
             shopping.InitializePreviousStoreOrders();
@@ -133,9 +115,6 @@ namespace Testing
         [Fact]
         public void ValidateStoreMenuChoiceTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
-
             shopping.Login("Alditone", "12345");
             int storeCount = shopping.CurrentCustomer.StoreLocations.Count;
 
@@ -149,9 +128,6 @@ namespace Testing
         [Fact]
         public void ValidateShoppingMenuChoiceTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
-
             int validChoice = shopping.ValidateShoppingMenuChoice("1", 4);
             int invalidChoice = shopping.ValidateShoppingMenuChoice("5", 4);
 
@@ -162,9 +138,6 @@ namespace Testing
         [Fact]
         public void ConvertToIntTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
-
             int number = shopping.ConvertInputToInt("123");
             int word = shopping.ConvertInputToInt("hello");
 
@@ -175,9 +148,6 @@ namespace Testing
         [Fact]
         public void GetListOfOrdersTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
-
             shopping.CurrentCustomer = new Customer();
             shopping.CurrentStore = new Store();
             shopping.InitializePreviousStoreOrders();
@@ -191,9 +161,6 @@ namespace Testing
         [Fact]
         public void AddProductToCartTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
-
             shopping.CurrentCustomer = new Customer();
             Product product = new Product() { Price = 40 };
             List<Product> fullCartList = Enumerable.Range(0, 50).Select(x => new Product()).ToList();
@@ -215,8 +182,6 @@ namespace Testing
         [Fact]
         public void ConvertCartToIEnumTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
             shopping.CurrentCustomer = new Customer();
 
             List<Product> cart = new List<Product>() {
@@ -246,8 +211,6 @@ namespace Testing
         [Fact]
         public void ConvertOrdersToIEnumTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
             shopping.CurrentCustomer = new Customer();
 
             List<Product> products = new List<Product>() { 
@@ -277,10 +240,37 @@ namespace Testing
         }
 
         [Fact]
+        public void ConvertSuccessfullOrderToIEnumTest()
+        {
+            shopping.CurrentCustomer = new Customer();
+
+            List<Product> products1 = new List<Product>() {
+                new Product { ProductId = 1, Name = "Product1", Description = "Product description 1", Price = 1 },
+                new Product { ProductId = 1, Name = "Product1", Description = "Product description 1", Price = 1 },
+                new Product { ProductId = 2, Name = "Product2", Description = "Product description 2", Price = 2 },
+                new Product { ProductId = 3, Name = "Product3", Description = "Product description 3", Price = 3 }
+            };
+            List<Product> products2 = new List<Product>() {
+                new Product { ProductId = 1, Name = "Product1", Description = "Product description 1", Price = 1 },
+                new Product { ProductId = 1, Name = "Product1", Description = "Product description 1", Price = 1 }
+            };
+            Order order1 = new Order() { OrderId = 1, Products = products1, TotalCost = 7 };
+            Order order2 = new Order() { OrderId = 2, Products = products2, TotalCost = 2 };
+
+            shopping.CurrentCustomer.PastOrders.Add(order1);
+            shopping.CurrentCustomer.PastOrders.Add(order2);
+
+            var q = shopping.ConvertSuccsessfullOrderToEnum();
+
+            Assert.Single(q);
+            Assert.Equal(2, q.ElementAt(0).Value);
+            Assert.Equal("Product1", q.ElementAt(0).Key.Name);
+            Assert.Equal(1, q.ElementAt(0).Key.Price);
+        }
+
+        [Fact]
         public void CheckoutTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
             shopping.CurrentCustomer = new Customer();
 
             List<Product> products = new List<Product>() {
@@ -307,8 +297,6 @@ namespace Testing
         [Fact]
         public void RemoveItemFromCartTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
             shopping.CurrentCustomer = new Customer();
 
             Product product1 = new Product { ProductId = 1, Name = "Product1", Description = "Product description 1", Price = 1 };
@@ -331,8 +319,6 @@ namespace Testing
         [Fact]
         public void CancelOrderTest()
         {
-            IDataBaseAccess mockDataBase = new MockDataBaseAccess();
-            ShoppingLogic shopping = new ShoppingLogic(mockDataBase);
             shopping.CurrentCustomer = new Customer();
 
             List<Product> products = new List<Product>() {
