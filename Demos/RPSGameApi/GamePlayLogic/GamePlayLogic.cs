@@ -4,6 +4,7 @@ using Storage;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.SqlClient;
+using System.Data;
 
 namespace Domain
 {
@@ -64,10 +65,10 @@ namespace Domain
         {
             //Call the DbAccess method to get the user with these credentials
             //if non null result, then th eplayer is returned to the client
-            SqlDataReader dr = _dataBaseAccess.Login(fname, lname);
+            DataTableReader dtr = _dataBaseAccess.Login(fname, lname);
 
             //run the return through the mapper to return a Player (or null)
-            Player p = _mapper.EntityToPlayer(dr);
+            Player p = _mapper.EntityToPlayer(dtr);
 
             return p;
             #region old code

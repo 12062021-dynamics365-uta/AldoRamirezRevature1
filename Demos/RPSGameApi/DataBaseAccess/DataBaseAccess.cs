@@ -33,7 +33,7 @@ namespace Storage
             return players;
         }
 
-        public SqlDataReader Login(string fname, string lname)
+        public DataTableReader Login(string fname, string lname)
         {
             string sqlQuery = "SELECT TOP 1 * FROM Players WHERE FirstName = @fname and LastName = @lname;";
 
@@ -44,8 +44,14 @@ namespace Storage
                 cmd.Parameters.AddWithValue("@lname", lname);
 
                 SqlDataReader dr = cmd.ExecuteReader();
+
+                DataTable players = new DataTable("Players");
+                players.Load(dr);
+                DataTableReader dtr = players.CreateDataReader();
+
                 //this._con.Close();// make sure this class is Transient... not songleton or Scoped.
-                return dr;
+                dr.Close();
+                return dtr;
             }
         }
     }

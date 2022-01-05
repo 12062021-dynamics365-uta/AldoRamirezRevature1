@@ -1,6 +1,7 @@
 ﻿using Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace Storage
     public interface IDataBaseAccess
     {
         List<Player> GetAllPlayers();
-        SqlDataReader Login(string fname, string lname);
+        DataTableReader Login(string fname, string lname);
 
     }
 }

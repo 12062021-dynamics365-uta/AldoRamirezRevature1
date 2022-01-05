@@ -43,10 +43,39 @@ namespace Tests.RPS_GameApi
             return players;
         }
 
-        public SqlDataReader Login(string fname, string lname)
+        public DataTableReader Login(string fname, string lname)
         {
-            
-            return null;
+            DataTable table = new DataTable("Players");
+            DataColumn idColumn = new DataColumn("PlayerId", typeof(int));
+            DataColumn fNameColumn = new DataColumn("FirstName", typeof(string));
+            DataColumn lNameColumn = new DataColumn("LastName", typeof(string));
+            DataColumn lossesColumn = new DataColumn("Losses", typeof(int));
+            DataColumn winsColumn = new DataColumn("Wins", typeof(int));
+
+            table.Columns.Add(idColumn);
+            table.Columns.Add(fNameColumn);
+            table.Columns.Add(lNameColumn);
+            table.Columns.Add(lossesColumn);
+            table.Columns.Add(winsColumn);
+
+            DataRow newRow = table.NewRow();
+            newRow["PlayerId"] = 1;
+            newRow["FirstName"] = "Aldo";
+            newRow["LastName"] = "Ramirez";
+            newRow["Losses"] = 0;
+            newRow["Wins"] = 0;
+            table.Rows.Add(newRow);
+
+            DataTableReader dtr = table.CreateDataReader();
+
+            if (fname == "Aldo" && lname == "Ramirez")
+                return dtr;
+            else
+            {
+                table.Clear();
+                DataTableReader dtrEmpty = table.CreateDataReader();
+                return dtrEmpty;
+            }
         }
     }
 }
