@@ -12,7 +12,7 @@ namespace Storage
     public interface IDataBaseAccess
     {
         List<Player> GetAllPlayers();
-        DataTableReader Login(string fname, string lname);
-
+        Task<DataTableReader> LoginAsync(string fname, string lname);
+        Task<Player> RegisterNewPlayerAsync(string fname, string lname);
     }
 }

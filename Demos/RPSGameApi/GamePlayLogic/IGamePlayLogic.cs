@@ -12,7 +12,7 @@ namespace Domain
         Player WinnerYet();
         List<Player> GetAllPlayers();
         List<Game> PrintUsersGames();
-        Player Login(string userFName, string userLName);
+        Task<Player> LoginAsync(string userFName, string userLName);
         void StartNewGame();
         void ResetGame();
         Choice ValidateUserChoice(string choice);
@@ -22,5 +22,6 @@ namespace Domain
         int GetUserWins();
         int GetTies();
         int GetNumRounds();
+        Task<Player> RegisterNewPlayerAsync(string fname, string lname);
     }
 }

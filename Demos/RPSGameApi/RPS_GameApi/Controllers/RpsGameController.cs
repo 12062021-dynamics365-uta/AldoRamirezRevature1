@@ -19,13 +19,6 @@ namespace RPS_GameApi.Controllers
             this._gamePlayLogic = gpl;
         }
 
-        //All the methods in a controller are called Action methods
-        //To be accessable to the outside world, they must be public.
-        //public IActionResult Index()
-        //{
-           // return View();
-        //}
-
         /// <summary>
         /// The method will take the first and last names of the player
         /// adn check if that player exists in the Db
@@ -37,14 +30,26 @@ namespace RPS_GameApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("loginplayer/{fname}/{lname}")]
-        public ActionResult<Player> LoginPlayer(string fname, string lname)
+        public async Task<ActionResult<Player>> LoginPlayer(string fname, string lname)
         {
             //call the business (gpl) layer to retrieve the player, if it exists
-            Player p = this._gamePlayLogic.Login(fname, lname);
+            Player p = await this._gamePlayLogic.LoginAsync(fname, lname);
             if (p == null)
                 return NotFound();
             else
                 return Ok(p);
+        }
+
+        [HttpPost]
+        [Route("registernewplayer/{fname}/{lname}")]
+        public async Task<ActionResult<Player>> RegisterNewPlayer (string fname, string lname)
+        {
+            // call the business layer to register a player
+            Player p = await this._gamePlayLogic.RegisterNewPlayerAsync(fname, lname);
+            if (p != null)
+                return Created($"http://5001/rpsgame/players/{p.PlayerId}", p); //make sure this URI is correct
+            else
+                return new UnprocessableEntityResult();
         }
     }
 }

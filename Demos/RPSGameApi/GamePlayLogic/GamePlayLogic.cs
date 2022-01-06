@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.SqlClient;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace Domain
 {
@@ -61,11 +62,11 @@ namespace Domain
         /// </summary>
         /// <param name="userFName"></param>
         /// <param name="userLName"></param>
-        public Player Login(string fname, string lname)
+        public async Task<Player> LoginAsync(string fname, string lname)
         {
             //Call the DbAccess method to get the user with these credentials
             //if non null result, then th eplayer is returned to the client
-            DataTableReader dtr = _dataBaseAccess.Login(fname, lname);
+            DataTableReader dtr = await _dataBaseAccess.LoginAsync(fname, lname);
 
             //run the return through the mapper to return a Player (or null)
             Player p = _mapper.EntityToPlayer(dtr);
@@ -87,6 +88,19 @@ namespace Domain
                 this.currentLoggedInPlayer = p;
             }*/
             #endregion
+        }
+
+        public async Task<Player> RegisterNewPlayerAsync(string fname, string lname)
+        {
+            if(fname != "" && lname != "")
+            {
+                Player p = await this._dataBaseAccess.RegisterNewPlayerAsync(fname, lname);
+                if (p != null)
+                    return p;
+                else
+                    return null;
+            }
+            return null;
         }
 
         /// <summary>
@@ -273,5 +287,6 @@ namespace Domain
         {
             return this.currentGame.Rounds.Count;
         }
+
     }
 }
