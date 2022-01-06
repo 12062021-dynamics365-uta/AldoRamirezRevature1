@@ -32,39 +32,56 @@ endText.innerText = "Enter a number to end with:";
 let endElem = document.createElement('input');
 let submitEnd = document.createElement('button');
 
+let error = document.createElement('p');
+
 let startNum = 0;
 
 submitStart.addEventListener('click', (event) => {
-    document.body.innerHTML = '';
     let text = startElem.value;
     
     if(validateInput(text))
     {
+        document.body.innerHTML = '';
         startNum = parseInt(text);
+        document.body.appendChild(endText);
+        document.body.appendChild(endElem);
+        document.body.appendChild(submitEnd);
+        submitEnd.innerText = 'Enter';
+    }
+    else
+    {
+        startElem.value = '';
+        document.body.appendChild(error);
+        error.innerText = "Invalid Input: Please try again!";
     }
     
-    document.body.appendChild(endText);
-    document.body.appendChild(endElem);
-    document.body.appendChild(submitEnd);
-    submitEnd.innerText = 'Enter';
 });
 
 let endNum = 0;
 
 submitEnd.addEventListener('click', (event) => {
-    document.body.innerHTML = '';
     let text = endElem.value;
-    
-    if(validateInput(text))
+
+    if(validateInput(text) && parseInt(text) - startNum >= 199
+        && parseInt(text) - startNum < 10000)
+    {
+        document.body.innerHTML = '';
         endNum = parseInt(text);
-    
-    printSweetNSalty(startNum, endNum);
+        printSweetNSalty(startNum, endNum);
+    }
+    else
+    {
+        endElem.value = '';
+        document.body.appendChild(error);
+        error.innerText = "Invalid Input: Please try again!";
+    }
+
 });
 
 function validateInput(text) {
-    if(text.trim().length != 0)
+    if(text.trim().length != 0 && !isNaN(text))
     {
-        if(parseInt(text) < 0)
+        if(parseInt(text) <= 0)
             return false;
         else
             return true;
@@ -89,7 +106,7 @@ function printSweetNSalty(startNum, endNum)
         { 
             let span = document.createElement('span');
             span.classList.add("sweetNSaltyClass")
-            span.textContent = "sweet'nSalty ";
+            span.textContent = "sweet'nSalty";
             para.append(span); //Concat sweet'nSalty
             sweetNSalty++; //Increment sweet'nSalty count
         }
@@ -97,7 +114,7 @@ function printSweetNSalty(startNum, endNum)
         {
             let span = document.createElement('span');
             span.classList.add("sweetNSaltyClass")
-            span.textContent = "sweet ";
+            span.textContent = "sweet";
             para.append(span); //Concat sweet
             sweetCnt++; //Increment sweet count
         }
@@ -105,18 +122,18 @@ function printSweetNSalty(startNum, endNum)
         {
             let span = document.createElement('span');
             span.classList.add("sweetNSaltyClass")
-            span.textContent = "salty ";
+            span.textContent = "salty";
             para.append(span); //Concat salty
             saltyCnt++; //Increment salty count
         }
         else //Not multiple of either 3 or 5
         {
             if (i > 999) //If greater than 999 add coma
-                para.append(`${i.toLocaleString()} `); //Concat number 
+                para.append(`${i.toLocaleString()}`); //Concat number 
             else
-                para.append(`${i} `); //Concat number
+                para.append(`${i}`); //Concat number
         }
-        
+        para.append(' ');
         if (groupCount == 40 || i == endNum) //Number of concats reaches 40
         {
             para.append("\n");
