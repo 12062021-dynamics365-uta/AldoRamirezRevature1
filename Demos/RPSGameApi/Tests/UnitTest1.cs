@@ -34,7 +34,7 @@ namespace Tests.RPS_GameApi
             //arrange is above
 
             //act
-            Player result = gpl.Login(fname, lname);
+            Player result = gpl.LoginAsync(fname, lname);
 
             //Assert
             if(lname == "User")

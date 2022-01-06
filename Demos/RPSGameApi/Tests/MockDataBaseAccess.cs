@@ -43,7 +43,7 @@ namespace Tests.RPS_GameApi
             return players;
         }
 
-        public DataTableReader Login(string fname, string lname)
+        public DataTableReader LoginAsync(string fname, string lname)
         {
             DataTable table = new DataTable("Players");
             DataColumn idColumn = new DataColumn("PlayerId", typeof(int));
@@ -76,6 +76,11 @@ namespace Tests.RPS_GameApi
                 DataTableReader dtrEmpty = table.CreateDataReader();
                 return dtrEmpty;
             }
+        }
+
+        public Task<Player> RegisterNewPlayerAsync(string fname, string lname)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -3,6 +3,8 @@ using Models;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace Storage
 {
@@ -33,7 +35,7 @@ namespace Storage
             return players;
         }
 
-        public DataTableReader Login(string fname, string lname)
+        public async Task<DataTableReader> LoginAsync(string fname, string lname)
         {
             string sqlQuery = "SELECT TOP 1 * FROM Players WHERE FirstName = @fname and LastName = @lname;";
 
@@ -43,7 +45,7 @@ namespace Storage
                 cmd.Parameters.AddWithValue("@fname", fname);
                 cmd.Parameters.AddWithValue("@lname", lname);
 
-                SqlDataReader dr = cmd.ExecuteReader();
+                SqlDataReader dr = await cmd.ExecuteReaderAsync();
 
                 DataTable table = new DataTable("Players");
                 table.Load(dr);
@@ -52,6 +54,28 @@ namespace Storage
                 //this._con.Close();// make sure this class is Transient... not songleton or Scoped.
                 dr.Close();
                 return dtr;
+            }
+        }
+
+        public async Task<Player> RegisterNewPlayerAsync(string fname, string lname)
+        {
+            // call the async method in ADO.NET to post that player
+            string sqlQuery = "INSERT INTO Players (FirstName, LastName, Losses, Wins) VALUES (@fname, @lname, 0, 0);";
+
+            using (SqlCommand cmd = new SqlCommand(sqlQuery, this._con))
+            {
+                cmd.Parameters.AddWithValue("@fname", fname);
+                cmd.Parameters.AddWithValue("@lname", lname);
+
+                try
+                {
+                    int dr = await cmd.ExecuteNonQueryAsync();
+                    return new Player() { Fname = fname, Lname = lname, Losses = 0, Wins = 0};
+                } 
+                catch (DbException ex)
+                {
+                    return null;
+                }
             }
         }
     }
