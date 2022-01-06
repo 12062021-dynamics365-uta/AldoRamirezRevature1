@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,45 @@ namespace Tests.RPS_GameApi
 {
     class MockDataBaseAccess : IDataBaseAccess
     {
+        private readonly DataTable playerTable;
+        private readonly DataTable emptyPlayerTable;
+
+        public MockDataBaseAccess()
+        {
+            playerTable = new DataTable("Players");
+            DataColumn idColumn = new DataColumn("PlayerId", typeof(int));
+            DataColumn fNameColumn = new DataColumn("FirstName", typeof(string));
+            DataColumn lNameColumn = new DataColumn("LastName", typeof(string));
+            DataColumn lossesColumn = new DataColumn("Losses", typeof(int));
+            DataColumn winsColumn = new DataColumn("Wins", typeof(int));
+
+            playerTable.Columns.Add(idColumn);
+            playerTable.Columns.Add(fNameColumn);
+            playerTable.Columns.Add(lNameColumn);
+            playerTable.Columns.Add(lossesColumn);
+            playerTable.Columns.Add(winsColumn);
+            
+
+            DataRow newRow = playerTable.NewRow();
+            newRow["PlayerId"] = 1;
+            newRow["FirstName"] = "Aldo";
+            newRow["LastName"] = "Ramirez";
+            newRow["Losses"] = 0;
+            newRow["Wins"] = 0;
+            playerTable.Rows.Add(newRow);
+
+            newRow = playerTable.NewRow();
+            newRow["PlayerId"] = 2;
+            newRow["FirstName"] = "Bob";
+            newRow["LastName"] = "Ross";
+            newRow["Losses"] = 0;
+            newRow["Wins"] = 0;
+            playerTable.Rows.Add(newRow);
+
+            emptyPlayerTable = playerTable.Copy();
+            emptyPlayerTable.Clear();
+        }
+
         public List<Player> GetAllPlayers()
         {
             List<Player> players = new List<Player>();
@@ -43,39 +83,17 @@ namespace Tests.RPS_GameApi
             return players;
         }
 
-        public DataTableReader LoginAsync(string fname, string lname)
+        public async Task<DataTableReader> LoginAsync(string fname, string lname)
         {
-            DataTable table = new DataTable("Players");
-            DataColumn idColumn = new DataColumn("PlayerId", typeof(int));
-            DataColumn fNameColumn = new DataColumn("FirstName", typeof(string));
-            DataColumn lNameColumn = new DataColumn("LastName", typeof(string));
-            DataColumn lossesColumn = new DataColumn("Losses", typeof(int));
-            DataColumn winsColumn = new DataColumn("Wins", typeof(int));
-
-            table.Columns.Add(idColumn);
-            table.Columns.Add(fNameColumn);
-            table.Columns.Add(lNameColumn);
-            table.Columns.Add(lossesColumn);
-            table.Columns.Add(winsColumn);
-
-            DataRow newRow = table.NewRow();
-            newRow["PlayerId"] = 1;
-            newRow["FirstName"] = "Aldo";
-            newRow["LastName"] = "Ramirez";
-            newRow["Losses"] = 0;
-            newRow["Wins"] = 0;
-            table.Rows.Add(newRow);
-
-            DataTableReader dtr = table.CreateDataReader();
-
-            if (fname == "Aldo" && lname == "Ramirez")
-                return dtr;
-            else
+            DataRow[] playerFound = playerTable.Select($"FirstName = '{fname}' AND LastName = '{lname}'");
+            if (playerFound.Length != 0)
             {
-                table.Clear();
-                DataTableReader dtrEmpty = table.CreateDataReader();
-                return dtrEmpty;
+                DataTable dataTable = emptyPlayerTable.Copy();
+                dataTable.ImportRow(playerFound[0]);
+                return dataTable.CreateDataReader();
             }
+            else
+                return emptyPlayerTable.CreateDataReader();
         }
 
         public Task<Player> RegisterNewPlayerAsync(string fname, string lname)

@@ -24,7 +24,6 @@ namespace Tests.RPS_GameApi
                 };
                 return p;
             }
-
             return null;
         }
 
