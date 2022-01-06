@@ -3,6 +3,8 @@ using Models;
 using Storage;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Tests.RPS_GameApi
@@ -13,11 +15,12 @@ namespace Tests.RPS_GameApi
         private static IDataBaseAccess mockDbAccess = new MockDataBaseAccess();
         private static IMapper mockMapper = new MockMapper();
         private static GamePlayLogic gpl = new GamePlayLogic(mockDbAccess, mockMapper);
+
         [Fact]
         public void GetAllPlayersReturnsAListOfPlayers()
         {
             //arange is abov
-
+            
             //act
             List<Player> players = gpl.GetAllPlayers();
 
@@ -29,12 +32,12 @@ namespace Tests.RPS_GameApi
         [Theory]
         [InlineData("Aldo", "Ramirez")]
         [InlineData("Fake", "User")]
-        public void LoginReturnsAPlayerObjectIfExistsNullIfNot(string fname, string lname)
+        public async Task LoginReturnsAPlayerObjectIfExistsNullIfNotAsync(string fname, string lname)
         {
             //arrange is above
-
+            
             //act
-            Player result = gpl.LoginAsync(fname, lname);
+            Player result = await gpl.LoginAsync(fname, lname);
 
             //Assert
             if(lname == "User")
