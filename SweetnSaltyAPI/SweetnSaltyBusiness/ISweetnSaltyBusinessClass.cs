@@ -13,5 +13,6 @@ namespace SweetnSaltyBusiness
         Task<Person> PostPerson(string fname, string lname);
         Task<Person> GetPerson(string fname, string lname);
         Task<List<Flavor>> GetAllFlavors();
+        Task<Person> GetPersonAndFlavors(int id);
     }
 }
