@@ -84,24 +84,13 @@ namespace SweetnSaltyDbAccess
             }
         }
 
-        public async Task<SqlDataReader> GetPersonById(int id)
+        public async Task<SqlDataReader> GetPersonAndFlavors(int id)
         {
-            string retrieveFlavor = "SELECT * FROM Person WHERE PersonId = @id;";
+            string retrieveFlavor = "SELECT p.PersonId, p.FirstName, p.LastName, f.FlavorId, f.FlavorName " +
+                "FROM Person p LEFT JOIN PersonFlavor pf ON p.PersonId = pf.PersonId " +
+                "LEFT JOIN Flavor f ON f.FlavorId = pf.FlavorId WHERE p.PersonId = @id;";
 
             using (SqlCommand cmd = new SqlCommand(retrieveFlavor, this._con))
-            {
-                cmd.Parameters.AddWithValue("@id", id);
-
-                SqlDataReader dr = await cmd.ExecuteReaderAsync();
-                return dr;
-            }
-        }
-
-        public async Task<SqlDataReader> GetPersonFlavors(int id)
-        {
-            string sqlQuery = "SELECT f.FlavorId, f.FlavorName FROM Flavor f LEFT JOIN PersonFlavor pf ON f.FlavorId = pf.FlavorId WHERE pf.PersonId = @id;";
-
-            using (SqlCommand cmd = new SqlCommand(sqlQuery, this._con))
             {
                 cmd.Parameters.AddWithValue("@id", id);
 

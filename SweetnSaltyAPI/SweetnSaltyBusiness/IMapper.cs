@@ -13,5 +13,6 @@ namespace SweetnSaltyBusiness
         Flavor EntityToFlavor(SqlDataReader dr);
         Person EntityToPerson(SqlDataReader dr);
         List<Flavor> EntityToFlavorList(SqlDataReader dr);
+        Person EntityToPersonAndFlavors(SqlDataReader dr);
     }
 }
