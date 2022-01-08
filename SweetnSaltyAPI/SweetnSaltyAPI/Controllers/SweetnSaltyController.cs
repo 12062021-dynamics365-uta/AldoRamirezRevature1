@@ -59,7 +59,12 @@ namespace SweetnSaltyAPI.Controllers
         [Route("getapersonandflavors/{id}")]
         public async Task<ActionResult<Person>> GetPersonAndFlavors(int id)
         {
-            throw new NotImplementedException();
+            Person p = await this._businessClass.GetPersonAndFlavors(id);
+
+            if (p != null)
+                return Ok(p);
+            else
+                return NotFound();
         }
 
         [HttpGet]

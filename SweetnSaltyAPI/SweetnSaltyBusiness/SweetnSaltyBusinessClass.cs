@@ -48,6 +48,22 @@ namespace SweetnSaltyBusiness
                 return null;
         }
 
+        public async Task<Person> GetPersonAndFlavors(int id)
+        {
+            SqlDataReader dr = await _dbAccessClass.GetPersonById(id);
+
+            if (dr.Read())
+            {
+                Person p = _mapper.EntityToPerson(dr);
+                dr.Close();
+                SqlDataReader dr1 = await _dbAccessClass.GetPersonFlavors(id);
+                p.Flavors = _mapper.EntityToFlavorList(dr1);
+                return p;
+            }
+            else
+                return null;
+        }
+
         public async Task<List<Flavor>> GetAllFlavors()
         {
             SqlDataReader dr = await _dbAccessClass.GetAllFlavors();
