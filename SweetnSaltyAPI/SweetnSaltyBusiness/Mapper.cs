@@ -29,11 +29,35 @@ namespace SweetnSaltyBusiness
             };
         }
 
+        public Person EntityToPersonAndFlavors(SqlDataReader dr)
+        {
+            Person p = new Person()
+            {
+                PersonId = dr.GetInt32(0),
+                Fname = dr.GetString(1),
+                Lname = dr.GetString(2),
+                Flavors = new List<Flavor>()
+            };
+            if (!dr.IsDBNull(3) && !dr.IsDBNull(4))
+            {
+                do
+                {
+                    p.Flavors.Add(new Flavor()
+                    {
+                        FlavorId = dr.GetInt32(3),
+                        FlavorName = dr.GetString(4)
+                    });
+                } while (dr.Read());
+            }
+
+            return p;
+        }
+
         public List<Flavor> EntityToFlavorList(SqlDataReader dr)
         {
             List<Flavor> list = new List<Flavor>();
 
-            while(dr.Read())
+            do
             {
                 Flavor flavor = new Flavor()
                 {
@@ -41,7 +65,8 @@ namespace SweetnSaltyBusiness
                     FlavorName = dr.GetString(1)
                 };
                 list.Add(flavor);
-            }
+            } while (dr.Read());
+
             return list;
         }
     }
